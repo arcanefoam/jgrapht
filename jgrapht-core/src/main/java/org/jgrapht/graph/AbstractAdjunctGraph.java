@@ -2,13 +2,13 @@ package org.jgrapht.graph;
 
 import java.util.Set;
 
-import org.jgrapht.AdjuntGraph;
+import org.jgrapht.AdjunctGraph;
 import org.jgrapht.EdgeFactory;
 import org.jgrapht.Graph;
 
 public abstract class AbstractAdjunctGraph<V, E>
 	extends AbstractBaseGraph<V, E>
-	implements AdjuntGraph<V, E>
+	implements AdjunctGraph<V, E>
 {
 
 	protected UnmodifiableGraph<V,E> base;

@@ -36,8 +36,7 @@
  */
 package org.jgrapht.graph;
 
-import org.jgrapht.AdjuntGraph;
-import org.jgrapht.DirectedGraph;
+import org.jgrapht.AdjunctGraph;
 import org.junit.Test;
 
 import junit.framework.TestCase;
@@ -54,7 +53,7 @@ public class SimpleAdjunctGraphTest
     private String v4 = "v4";
     
     private SimpleGraph<String, DefaultEdge> base;
-    private AdjuntGraph<String, DefaultEdge, SimpleGraph<String, DefaultEdge>> adjunct;
+    private AdjunctGraph<String, DefaultEdge> adjunct;
 
     /**
      * @see junit.framework.TestCase#TestCase(java.lang.String)
@@ -87,7 +86,7 @@ public class SimpleAdjunctGraphTest
     	base.addVertex(v2);
     	base.addEdge(v1, v2);
     	base.addEdge(v2, v1);
-    	adjunct = new SimpleAdjunctGraph<String, DefaultEdge, SimpleGraph<String, DefaultEdge>>(base);
+    	adjunct = new SimpleAdjunctGraph<String, DefaultEdge>(base);
     	
     }
 }

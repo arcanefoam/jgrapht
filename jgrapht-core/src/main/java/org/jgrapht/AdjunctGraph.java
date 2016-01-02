@@ -47,7 +47,7 @@ package org.jgrapht;
  * @param <V> the value type
  * @param <E> the element type
  */
-public interface AdjuntGraph<V, E> extends Graph<V, E> {
+public interface AdjunctGraph<V, E> extends Graph<V, E> {
 	
 	/**
 	 * Returns the graph that is the base for this graph. The source graph is 
