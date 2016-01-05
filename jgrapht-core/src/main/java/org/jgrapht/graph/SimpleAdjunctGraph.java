@@ -52,6 +52,11 @@ public class SimpleAdjunctGraph<V, E>
 	implements UndirectedGraph<V, E>
 {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 4722568089288079444L;
+
 	protected SimpleAdjunctGraph(SimpleGraph<V, E> base) {
 		super(base.getEdgeFactory(), false, false);
 		this.base = new UnmodifiableGraph<V, E>(base) ;

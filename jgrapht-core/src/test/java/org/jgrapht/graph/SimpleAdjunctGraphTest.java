@@ -32,6 +32,7 @@
  * Changes
  * -------
  * 28-Nov-2015 : Initial revision (HH);
+ * 05-Jan-2016 : Additional tests (HH);
  * 
  */
 package org.jgrapht.graph;
@@ -75,6 +76,52 @@ public class SimpleAdjunctGraphTest
     	assertNotNull(e1);
     	DefaultEdge e2 = adjunct.getEdge(v2, v1);
     	assertNotNull(e2);
+    }
+    
+    @Test
+    public void testProtectedBase() {
+    	
+    	adjunct.removeVertex(v1);
+    	assertTrue(adjunct.containsVertex(v1));
+    	DefaultEdge e1 = adjunct.getEdge(v1, v2);
+    	assertNotNull(e1);
+    	adjunct.removeEdge(e1);
+    	assertTrue(adjunct.containsEdge(e1));
+    	adjunct.removeEdge(v1, v2);
+    	assertTrue(adjunct.containsEdge(e1));
+    }
+    
+    @Test
+    public void testJointGraph() {
+    	
+    	adjunct.addVertex(v3);
+    	assertTrue(adjunct.containsVertex(v3));
+    	adjunct.addVertex(v4);
+    	DefaultEdge e1 = adjunct.addEdge(v3, v4);
+    	assertTrue(adjunct.containsEdge(e1));
+    	DefaultEdge e2 = adjunct.addEdge(v1, v3);
+    	assertTrue(adjunct.containsEdge(e2));
+    	assertTrue(adjunct.edgeSet().contains(e1));
+    	assertTrue(adjunct.edgeSet().contains(e2));
+    	assertTrue(adjunct.vertexSet().contains(v2));
+    	assertTrue(adjunct.vertexSet().contains(v4));
+    }
+    
+    @Test
+    public void testAdjunctGraph() {
+    	
+    	assertFalse(adjunct.adjunctContainsVertex(v1));
+    	assertFalse(adjunct.adjunctVertexSet().contains(v1));
+    	adjunct.addVertex(v3);
+    	assertTrue(adjunct.adjunctContainsVertex(v3));
+    	assertTrue(adjunct.adjunctVertexSet().contains(v3));
+    	adjunct.addVertex(v4);
+    	DefaultEdge e1 = adjunct.getEdge(v1, v2);
+    	assertFalse(adjunct.adjunctContainsEdge(e1));
+    	DefaultEdge e2 = adjunct.addEdge(v3, v4);
+    	assertTrue(adjunct.adjunctContainsEdge(e2));
+    	assertFalse(adjunct.adjunctEdgeSet().contains(e1));
+    	assertTrue(adjunct.adjunctEdgeSet().contains(e2));
     }
     
 	@Override
