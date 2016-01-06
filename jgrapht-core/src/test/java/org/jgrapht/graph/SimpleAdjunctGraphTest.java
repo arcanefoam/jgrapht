@@ -37,7 +37,9 @@
  */
 package org.jgrapht.graph;
 
-import org.jgrapht.AdjunctGraph;
+import org.jgrapht.event.GraphEdgeChangeEvent;
+import org.jgrapht.event.GraphListener;
+import org.jgrapht.event.GraphVertexChangeEvent;
 import org.junit.Test;
 
 import junit.framework.TestCase;
@@ -48,13 +50,49 @@ import junit.framework.TestCase;
 public class SimpleAdjunctGraphTest
 	extends TestCase
 {
+	
+		
+	private class TestListener implements GraphListener<String, DefaultEdge> {
+		
+		private String lastEventVertex;
+		private DefaultEdge lastEventEdge;
+		
+		public String getLastEventVertex() {
+			return lastEventVertex;
+		}
+
+		public DefaultEdge getLastEventEdge() {
+			return lastEventEdge;
+		}
+
+		@Override
+		public void vertexRemoved(GraphVertexChangeEvent<String> e) {
+			lastEventVertex = e.getVertex();
+		}
+		
+		@Override
+		public void vertexAdded(GraphVertexChangeEvent<String> e) {
+			lastEventVertex = e.getVertex();
+		}
+		
+		@Override
+		public void edgeRemoved(GraphEdgeChangeEvent<String, DefaultEdge> e) {
+			lastEventEdge = e.getEdge();
+		}
+		
+		@Override
+		public void edgeAdded(GraphEdgeChangeEvent<String, DefaultEdge> e) {
+			lastEventEdge = e.getEdge();
+		}
+	}
+	
 	private String v1 = "v1";
-	private String v2 = "v2";
-	private String v3 = "v3";
-	private String v4 = "v4";
+    private String v2 = "v2";
+    private String v3 = "v3";
+    private String v4 = "v4";
     
-	private SimpleGraph<String, DefaultEdge> base;
-	private AdjunctGraph<String, DefaultEdge> adjunct;
+    private SimpleGraph<String, DefaultEdge> base;
+    private SimpleAdjunctGraph<String, DefaultEdge> adjunct;
 
     /**
      * @see junit.framework.TestCase#TestCase(java.lang.String)
@@ -137,5 +175,33 @@ public class SimpleAdjunctGraphTest
     	assertTrue(adjunct.adjunctEdgeSet().contains(e2));
     }
     
-	
+    @Test
+    public void testIsListenable() {
+    	
+    	
+    	ListenableUndirectedGraph<String, DefaultEdge> wrapGraph = new ListenableUndirectedGraph<String, DefaultEdge>(adjunct);
+    	TestListener l = new TestListener();
+    	wrapGraph.addGraphListener(l);
+    	wrapGraph.addVertex(v3);
+    	assertEquals(v3, l.getLastEventVertex());
+    	wrapGraph.addVertex(v4);
+    	assertEquals(v4, l.getLastEventVertex());
+    	DefaultEdge e1 = wrapGraph.addEdge(v3, v4);
+    	assertEquals(e1, l.getLastEventEdge());
+    	wrapGraph.removeEdge(e1);
+    	assertEquals(e1, l.getLastEventEdge());
+    }
+    
+	@Override
+	protected void setUp() throws Exception
+    {
+    	base = new SimpleGraph<String, DefaultEdge>(
+                DefaultEdge.class);
+    	base.addVertex(v1);
+    	base.addVertex(v2);
+    	base.addEdge(v1, v2);
+    	base.addEdge(v2, v1);
+    	adjunct = new SimpleAdjunctGraph<String, DefaultEdge>(base);
+    	
+    }
 }
