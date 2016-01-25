@@ -61,7 +61,7 @@ public interface AdjunctGraph<V, E> extends Graph<V, E> {
 	 *  
 	 * @return The base graph
 	 */
-	public Graph<V, E> getBaseGraph();
+	public Graph<V, E> getPrimaryGraph();
 	////{@link #getComponentAt(int, int) getComponentAt} method.
 	/**
      * Returns <tt>true</tt> if and only if the adjunct portion of the graph

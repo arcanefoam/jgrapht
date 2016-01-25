@@ -49,12 +49,12 @@ public class SimpleAdjunctGraphTest
 	extends TestCase
 {
 	private String v1 = "v1";
-    private String v2 = "v2";
-    private String v3 = "v3";
-    private String v4 = "v4";
+	private String v2 = "v2";
+	private String v3 = "v3";
+	private String v4 = "v4";
     
-    private SimpleGraph<String, DefaultEdge> base;
-    private AdjunctGraph<String, DefaultEdge> adjunct;
+	private SimpleGraph<String, DefaultEdge> base;
+	private AdjunctGraph<String, DefaultEdge> adjunct;
 
     /**
      * @see junit.framework.TestCase#TestCase(java.lang.String)
@@ -62,6 +62,19 @@ public class SimpleAdjunctGraphTest
     public SimpleAdjunctGraphTest(String name)
     {
         super(name);
+    }
+    
+    @Override
+	protected void setUp() throws Exception
+    {
+    	base = new SimpleGraph<String, DefaultEdge>(
+                DefaultEdge.class);
+    	base.addVertex(v1);
+    	base.addVertex(v2);
+    	base.addEdge(v1, v2);
+    	base.addEdge(v2, v1);
+    	adjunct = new SimpleAdjunctGraph<String, DefaultEdge>(base);
+    	
     }
     
 //	protected void tearDown() throws Exception {
@@ -124,16 +137,5 @@ public class SimpleAdjunctGraphTest
     	assertTrue(adjunct.adjunctEdgeSet().contains(e2));
     }
     
-	@Override
-	protected void setUp() throws Exception
-    {
-    	base = new SimpleGraph<String, DefaultEdge>(
-                DefaultEdge.class);
-    	base.addVertex(v1);
-    	base.addVertex(v2);
-    	base.addEdge(v1, v2);
-    	base.addEdge(v2, v1);
-    	adjunct = new SimpleAdjunctGraph<String, DefaultEdge>(base);
-    	
-    }
+	
 }

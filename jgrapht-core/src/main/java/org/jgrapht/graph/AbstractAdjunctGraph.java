@@ -61,17 +61,19 @@ public abstract class AbstractAdjunctGraph<V, E>
 	 * 
 	 */
 	private static final long serialVersionUID = 5730647889266263861L;
-	protected UnmodifiableGraph<V,E> base;
+	protected UnmodifiableGraph<V,E> primaryGraph;
 	private boolean jointAccess = true;
 
-	public AbstractAdjunctGraph(EdgeFactory<V, E> ef, boolean allowMultipleEdges, boolean allowLoops) {
-		super(ef, allowMultipleEdges, allowLoops);
+	public AbstractAdjunctGraph(Graph<V, E> primaryGraph, boolean allowMultipleEdges, boolean allowLoops) {
+		super(primaryGraph.getEdgeFactory(), allowMultipleEdges, allowLoops);
+		this.primaryGraph = new UnmodifiableGraph<V, E>(primaryGraph);
+		
 	}
 
 	@Override
 	public Set<E> getAllEdges(V sourceVertex, V targetVertex) {
 		
-		Set<E> baseEdges = new HashSet<E>(base.getAllEdges(sourceVertex, targetVertex));
+		Set<E> baseEdges = new HashSet<E>(primaryGraph.getAllEdges(sourceVertex, targetVertex));
 		if (jointAccess)
 			baseEdges.addAll(super.getAllEdges(sourceVertex, targetVertex));
 		return baseEdges; 
@@ -82,7 +84,7 @@ public abstract class AbstractAdjunctGraph<V, E>
 		
 		E baseEdge  = super.getEdge(sourceVertex, targetVertex);
 		if ((baseEdge == null) && jointAccess) {
-			baseEdge = base.getEdge(sourceVertex, targetVertex);
+			baseEdge = primaryGraph.getEdge(sourceVertex, targetVertex);
 		}
 		return baseEdge;
 	}
@@ -90,7 +92,7 @@ public abstract class AbstractAdjunctGraph<V, E>
 	@Override
 	public E addEdge(V sourceVertex, V targetVertex) {
 		
-		if (base.containsVertex(sourceVertex) && base.containsVertex(targetVertex)) {
+		if (primaryGraph.containsVertex(sourceVertex) && primaryGraph.containsVertex(targetVertex)) {
 			throw new UnsupportedOperationException("the base graph is unmodifiable");
 		}
 		return super.addEdge(sourceVertex, targetVertex);
@@ -99,7 +101,7 @@ public abstract class AbstractAdjunctGraph<V, E>
 	@Override
 	public boolean addEdge(V sourceVertex, V targetVertex, E e) {
 		
-		if (base.containsVertex(sourceVertex) && base.containsVertex(targetVertex)) {
+		if (primaryGraph.containsVertex(sourceVertex) && primaryGraph.containsVertex(targetVertex)) {
 			throw new UnsupportedOperationException("the base graph is unmodifiable");
 		}
 		return super.addEdge(sourceVertex, targetVertex, e);
@@ -110,7 +112,7 @@ public abstract class AbstractAdjunctGraph<V, E>
 		
 		V source = super.getEdgeSource(e);
 		if (source == null)
-			source = base.getEdgeSource(e);
+			source = primaryGraph.getEdgeSource(e);
 		return source;
 	}
 
@@ -118,7 +120,7 @@ public abstract class AbstractAdjunctGraph<V, E>
 	public V getEdgeTarget(E e) {
 		V target = super.getEdgeTarget(e);
 		if (target == null)
-			target = base.getEdgeTarget(e);
+			target = primaryGraph.getEdgeTarget(e);
 		return target;
 	}
 
@@ -126,7 +128,7 @@ public abstract class AbstractAdjunctGraph<V, E>
 	public boolean containsEdge(E e) {
 		boolean contains = super.containsEdge(e);
 		if (!contains && jointAccess)
-			contains = base.containsEdge(e);
+			contains = primaryGraph.containsEdge(e);
 		return contains;
 	}
 
@@ -134,7 +136,7 @@ public abstract class AbstractAdjunctGraph<V, E>
 	public boolean containsEdge(V sourceVertex, V targetVertex) {
 		boolean contains = super.containsEdge(sourceVertex, targetVertex);
 		if (!contains && jointAccess)
-			contains = base.containsEdge(sourceVertex, targetVertex);
+			contains = primaryGraph.containsEdge(sourceVertex, targetVertex);
 		return contains;
 	}
 
@@ -143,7 +145,7 @@ public abstract class AbstractAdjunctGraph<V, E>
 		
 		boolean contains = super.containsVertex(v);
 		if (!contains && jointAccess)
-			contains = base.containsVertex(v);
+			contains = primaryGraph.containsVertex(v);
 		return contains;
 	}
 
@@ -152,7 +154,7 @@ public abstract class AbstractAdjunctGraph<V, E>
 		
 		if (containsVertex(v)) {
 	        return true;
-	    } else if (base.containsVertex(v)){
+	    } else if (primaryGraph.containsVertex(v)){
 	    	return true;
 	    } else if (v == null) {
 	        throw new NullPointerException();
@@ -163,8 +165,8 @@ public abstract class AbstractAdjunctGraph<V, E>
 	}
 
 	@Override
-	public Graph<V, E> getBaseGraph() {
-		return base;
+	public Graph<V, E> getPrimaryGraph() {
+		return primaryGraph;
 	}
 
 	@Override
@@ -172,7 +174,7 @@ public abstract class AbstractAdjunctGraph<V, E>
 	
 		Set<E> edges = new HashSet<E>(super.edgeSet());
 		if (jointAccess)
-			edges.addAll(base.edgeSet());
+			edges.addAll(primaryGraph.edgeSet());
 		return edges;
 	}
 
@@ -182,8 +184,8 @@ public abstract class AbstractAdjunctGraph<V, E>
 		Set<E> edges;
 		edges = super.edgesOf(vertex);
 		if (jointAccess)
-			edges.addAll(base.edgeSet());
-		edges.addAll(base.edgesOf(vertex));
+			edges.addAll(primaryGraph.edgeSet());
+		edges.addAll(primaryGraph.edgesOf(vertex));
 		return edges;
 	}
 	
@@ -230,7 +232,7 @@ public abstract class AbstractAdjunctGraph<V, E>
 		
 		Set<V> vertices = new HashSet<V>(super.vertexSet());
 		if (jointAccess)
-			vertices.addAll(base.vertexSet());
+			vertices.addAll(primaryGraph.vertexSet());
 		return vertices;
 	}
 
