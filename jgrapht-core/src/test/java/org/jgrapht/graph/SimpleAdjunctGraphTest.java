@@ -37,9 +37,9 @@
  */
 package org.jgrapht.graph;
 
-import org.jgrapht.AdjunctGraph;
-import org.junit.Test;
+import org.jgrapht.*;
 
+import org.junit.Test;
 import junit.framework.TestCase;
 
 /**
@@ -52,9 +52,11 @@ public class SimpleAdjunctGraphTest
 	private String v2 = "v2";
 	private String v3 = "v3";
 	private String v4 = "v4";
+	private String v5 = "v5";
+	private String v6 = "v6";
     
 	private SimpleGraph<String, DefaultEdge> base;
-	private AdjunctGraph<String, DefaultEdge> adjunct;
+	private SimpleAdjunctGraph<String, DefaultEdge> adjunct;
 
     /**
      * @see junit.framework.TestCase#TestCase(java.lang.String)
@@ -114,6 +116,37 @@ public class SimpleAdjunctGraphTest
     	assertTrue(adjunct.containsEdge(e1));
     	DefaultEdge e2 = adjunct.addEdge(v1, v3);
     	assertTrue(adjunct.containsEdge(e2));
+    	assertTrue(adjunct.edgeSet().contains(e1));
+    	assertTrue(adjunct.edgeSet().contains(e2));
+    	assertTrue(adjunct.vertexSet().contains(v2));
+    	assertTrue(adjunct.vertexSet().contains(v4));
+    }
+    
+    @Test
+    public void testMultiAdjunct() {
+    	
+    	adjunct.addVertex(v3);
+    	assertTrue(adjunct.containsVertex(v3));
+    	adjunct.addVertex(v4);
+    	assertTrue(adjunct.containsVertex(v4));
+    	DefaultEdge e1 = adjunct.addEdge(v3, v4);
+    	assertTrue(adjunct.containsEdge(e1));
+    	DefaultEdge e2 = adjunct.addEdge(v1, v3);
+    	assertTrue(adjunct.containsEdge(e2));
+    	SimpleAdjunctGraph<String, DefaultEdge> adjunct2 = new SimpleAdjunctGraph<String, DefaultEdge>(adjunct);
+    	adjunct2.addVertex(v5);
+    	assertTrue(adjunct2.containsVertex(v5));
+    	adjunct2.addVertex(v6);
+    	assertTrue(adjunct2.vertexSet().contains(v6));
+    	assertTrue(adjunct2.vertexSet().contains(v1));
+    	assertTrue(adjunct2.vertexSet().contains(v3));
+    	DefaultEdge e3 = adjunct2.addEdge(v5, v6);
+    	assertTrue(adjunct2.containsEdge(e3));
+    	DefaultEdge e4 = adjunct2.addEdge(v1, v6);
+    	assertTrue(adjunct2.containsEdge(e4));
+    	DefaultEdge e5 = adjunct2.addEdge(v3, v6);
+    	assertTrue(adjunct2.containsEdge(e5));
+    	
     	assertTrue(adjunct.edgeSet().contains(e1));
     	assertTrue(adjunct.edgeSet().contains(e2));
     	assertTrue(adjunct.vertexSet().contains(v2));

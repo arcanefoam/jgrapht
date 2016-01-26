@@ -37,7 +37,6 @@
 package org.jgrapht.graph;
 
 import org.jgrapht.*;
-import org.jgrapht.util.*;
 
 /**
  * An adjunct graph. A default adjunct graph is a graph that extends another
@@ -52,12 +51,9 @@ public class SimpleAdjunctGraph<V, E>
 	implements UndirectedGraph<V, E>
 {
 	
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 4722568089288079444L;
 
-	protected SimpleAdjunctGraph(SimpleGraph<V, E> primaryGraph) {
+	protected SimpleAdjunctGraph(UndirectedGraph<V, E> primaryGraph) {
 		super(primaryGraph, false, false);
 	}
 }

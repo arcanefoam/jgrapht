@@ -36,7 +36,7 @@
  */
 package org.jgrapht.graph;
 
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 import org.jgrapht.*;
@@ -83,10 +83,10 @@ public class SimpleDirectedAdjunctGraph<V, E>
 	@Override
     public int inDegreeOf(V vertex)
     {
-		int degree = 0; 
+		int degree = super.inDegreeOf(vertex); 
 		if (primaryGraph.containsVertex(vertex))
 			degree += primaryGraph.inDegreeOf(vertex);
-		return degree + super.inDegreeOf(vertex);
+		return degree;
     }
 	
 	/* (non-Javadoc)
@@ -95,10 +95,9 @@ public class SimpleDirectedAdjunctGraph<V, E>
 	@Override
 	public Set<E> incomingEdgesOf(V vertex)
     {
-		Set<E> incoming = new HashSet<E>(); 
+		Set<E> incoming = new LinkedHashSet<E>(super.incomingEdgesOf(vertex)); 
 		if (primaryGraph.containsVertex(vertex))
 			incoming.addAll(primaryGraph.incomingEdgesOf(vertex));
-		incoming.addAll(super.incomingEdgesOf(vertex));
 		return incoming;
     }
 
@@ -108,10 +107,10 @@ public class SimpleDirectedAdjunctGraph<V, E>
 	@Override
     public int outDegreeOf(V vertex)
     {
-		int degree = 0; 
+		int degree = super.outDegreeOf(vertex); 
 		if (primaryGraph.containsVertex(vertex))
 			degree += primaryGraph.outDegreeOf(vertex);
-		return degree + super.outDegreeOf(vertex);
+		return degree;
     }
 
 	/* (non-Javadoc)
@@ -120,10 +119,9 @@ public class SimpleDirectedAdjunctGraph<V, E>
 	@Override
     public Set<E> outgoingEdgesOf(V vertex)
     {
-		Set<E> outgoing = new HashSet<E>(); 
+		Set<E> outgoing = new LinkedHashSet<E>(super.outgoingEdgesOf(vertex)); 
 		if (primaryGraph.containsVertex(vertex))
 			outgoing.addAll(primaryGraph.outgoingEdgesOf(vertex));
-		outgoing.addAll(super.outgoingEdgesOf(vertex));
 		return outgoing;
     }
 
@@ -163,6 +161,4 @@ public class SimpleDirectedAdjunctGraph<V, E>
 		return super.outgoingEdgesOf(vertex);
 	}
 	
-	
-
 }

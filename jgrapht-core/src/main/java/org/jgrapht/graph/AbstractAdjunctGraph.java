@@ -37,12 +37,11 @@
  */
 package org.jgrapht.graph;
 
-import java.util.HashSet;
+import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
-import org.jgrapht.AdjunctGraph;
-import org.jgrapht.EdgeFactory;
-import org.jgrapht.Graph;
+import org.jgrapht.*;
 
 /**
  * The most general implementation of the {@link org.jgrapht.AdjunctGraph}
@@ -73,9 +72,9 @@ public abstract class AbstractAdjunctGraph<V, E>
 	@Override
 	public Set<E> getAllEdges(V sourceVertex, V targetVertex) {
 		
-		Set<E> baseEdges = new HashSet<E>(primaryGraph.getAllEdges(sourceVertex, targetVertex));
+		Set<E> baseEdges = super.getAllEdges(sourceVertex, targetVertex);
 		if (jointAccess)
-			baseEdges.addAll(super.getAllEdges(sourceVertex, targetVertex));
+			baseEdges.addAll(primaryGraph.getAllEdges(sourceVertex, targetVertex));
 		return baseEdges; 
 	}
 
@@ -109,18 +108,23 @@ public abstract class AbstractAdjunctGraph<V, E>
 
 	@Override
 	public V getEdgeSource(E e) {
-		
-		V source = super.getEdgeSource(e);
-		if (source == null)
+		V source = null;
+		if (adjunctContainsEdge(e)) {
+			source = super.getEdgeSource(e);
+		} else {
 			source = primaryGraph.getEdgeSource(e);
+		}
 		return source;
 	}
 
 	@Override
 	public V getEdgeTarget(E e) {
-		V target = super.getEdgeTarget(e);
-		if (target == null)
+		V target = null;
+		if (adjunctContainsEdge(e)) {
+			target = super.getEdgeTarget(e);
+		} else {
 			target = primaryGraph.getEdgeTarget(e);
+		}
 		return target;
 	}
 
@@ -172,21 +176,19 @@ public abstract class AbstractAdjunctGraph<V, E>
 	@Override
 	public Set<E> edgeSet() {
 	
-		Set<E> edges = new HashSet<E>(super.edgeSet());
+		Set<E> edges = new LinkedHashSet<E>(super.edgeSet());
 		if (jointAccess)
 			edges.addAll(primaryGraph.edgeSet());
-		return edges;
+		return Collections.unmodifiableSet(edges);
 	}
 
 	@Override
 	public Set<E> edgesOf(V vertex) {
 		
-		Set<E> edges;
-		edges = super.edgesOf(vertex);
+		Set<E> edges = new LinkedHashSet<E>(super.edgesOf(vertex));
 		if (jointAccess)
 			edges.addAll(primaryGraph.edgeSet());
-		edges.addAll(primaryGraph.edgesOf(vertex));
-		return edges;
+		return Collections.unmodifiableSet(edges);
 	}
 	
 	@Override
@@ -230,10 +232,10 @@ public abstract class AbstractAdjunctGraph<V, E>
 	@Override
 	public Set<V> vertexSet() {
 		
-		Set<V> vertices = new HashSet<V>(super.vertexSet());
+		Set<V> vertices = new LinkedHashSet<V>(super.vertexSet());
 		if (jointAccess)
 			vertices.addAll(primaryGraph.vertexSet());
-		return vertices;
+		return Collections.unmodifiableSet(vertices);
 	}
 
 	@Override
@@ -286,6 +288,4 @@ public abstract class AbstractAdjunctGraph<V, E>
         return edges;
 	}
 	
-	
-
 }
