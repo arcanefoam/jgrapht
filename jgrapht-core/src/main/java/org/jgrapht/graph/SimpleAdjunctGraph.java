@@ -32,7 +32,7 @@
  * Changes
  * -------
  * 28-Nov-2015 : Initial revision (HH);
- * 
+ *
  */
 package org.jgrapht.graph;
 
@@ -40,20 +40,20 @@ import org.jgrapht.*;
 
 /**
  * An adjunct graph. A default adjunct graph is a graph that extends another
- * graph but is not essential to it. The adjunct graph  
+ * graph but is not essential to it. The adjunct graph
  * @author Goblin
  *
  * @param <V>
  * @param <E>
  */
 public class SimpleAdjunctGraph<V, E>
-	extends AbstractAdjunctGraph<V, E>
-	implements UndirectedGraph<V, E>
+    extends AbstractAdjunctGraph<V, E>
+    implements UndirectedGraph<V, E>
 {
-	
-	private static final long serialVersionUID = 4722568089288079444L;
 
-	protected SimpleAdjunctGraph(UndirectedGraph<V, E> primaryGraph) {
-		super(primaryGraph, false, false);
-	}
+    private static final long serialVersionUID = 4722568089288079444L;
+
+    protected SimpleAdjunctGraph(UndirectedGraph<V, E> primaryGraph) {
+        super(primaryGraph, false, false);
+    }
 }

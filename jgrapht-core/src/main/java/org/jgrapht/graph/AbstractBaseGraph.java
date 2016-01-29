@@ -80,7 +80,7 @@ public abstract class AbstractBaseGraph<V, E>
     boolean allowingLoops;
 
     private EdgeFactory<V, E> edgeFactory;
-    private EdgeSetFactory<V, E> edgeSetFactory;
+    protected EdgeSetFactory<V, E> edgeSetFactory;
     private Map<E, IntrusiveEdge> edgeMap;
     private transient Set<E> unmodifiableEdgeSet = null;
     private transient Set<V> unmodifiableVertexSet = null;
@@ -667,7 +667,7 @@ public abstract class AbstractBaseGraph<V, E>
         static final String NOT_IN_DIRECTED_GRAPH =
             "no such operation in a directed graph";
 
-        protected Map<V, DirectedEdgeContainer<V, E>> vertexMapDirected;
+        private Map<V, DirectedEdgeContainer<V, E>> vertexMapDirected;
 
         public DirectedSpecifics()
         {
@@ -859,7 +859,7 @@ public abstract class AbstractBaseGraph<V, E>
      *
      * @author Barak Naveh
      */
-    private static class UndirectedEdgeContainer<VV, EE>
+    protected static class UndirectedEdgeContainer<VV, EE>
         implements Serializable
     {
         private static final long serialVersionUID = -6623207588411170010L;
