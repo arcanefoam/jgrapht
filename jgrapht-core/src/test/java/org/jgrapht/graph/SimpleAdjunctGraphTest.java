@@ -97,13 +97,15 @@ public class SimpleAdjunctGraphTest
     public void testProtectedBase() {
 
         adjunct.removeVertex(v1);
-        assertTrue(adjunct.containsVertex(v1));
+        assertFalse(adjunct.containsVertex(v1));
+        assertTrue(primary.containsVertex(v1));
         DefaultEdge e1 = adjunct.getEdge(v1, v2);
         assertNotNull(e1);
         adjunct.removeEdge(e1);
-        assertTrue(adjunct.containsEdge(e1));
+        assertFalse(adjunct.containsEdge(e1));
         adjunct.removeEdge(v1, v2);
-        assertTrue(adjunct.containsEdge(e1));
+        assertFalse(adjunct.containsEdge(e1));
+        assertTrue(primary.containsEdge(e1));
     }
 
     @Test
