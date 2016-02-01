@@ -540,7 +540,81 @@ public abstract class AbstractBaseGraph<V, E>
 
     protected Specifics<V,E> createDirectedSpecifics()
     {
-        return new FastLookupDirectedSpecifics<>(this);
+        return new DirectedSpecifics();
+    }
+
+
+
+    /**
+     * An interface to provide partial support of the Graph API intended to allow implementation of fast access to
+     * vertex adjacent edges.
+     *
+     *
+     * @author Barak Naveh
+     */
+    protected interface Specifics<V, E>
+        extends Serializable
+    {
+
+        public void addVertex(V vertex);
+
+        public abstract Set<V> getVertexSet();
+
+        /**
+         * @see Graph#getAllEdges(Object, Object)
+         */
+        public Set<E> getAllEdges(V sourceVertex, V targetVertex);
+
+        /**
+         * @see Graph#getEdge(Object, Object)
+         */
+        public E getEdge(V sourceVertex, V targetVertex);
+
+        /**
+         * Adds the specified edge to the edge containers of its source and
+         * target vertices.
+         *
+         * @param e
+         */
+        public void addEdgeToTouchingVertices(E e);
+
+        /**
+         * @see UndirectedGraph#degreeOf(Object)
+         */
+        public int degreeOf(V vertex);
+
+        /**
+         * @see Graph#edgesOf(Object)
+         */
+        public Set<E> edgesOf(V vertex);
+
+        /**
+         * @see DirectedGraph#inDegreeOf(Object)
+         */
+        public int inDegreeOf(V vertex);
+
+        /**
+         * @see DirectedGraph#incomingEdgesOf(Object)
+         */
+        public Set<E> incomingEdgesOf(V vertex);
+
+        /**
+         * @see DirectedGraph#outDegreeOf(Object)
+         */
+        public int outDegreeOf(V vertex);
+
+        /**
+         * @see DirectedGraph#outgoingEdgesOf(Object)
+         */
+        public Set<E> outgoingEdgesOf(V vertex);
+
+        /**
+         * Removes the specified edge from the edge containers of its source and
+         * target vertices.
+         *
+         * @param e
+         */
+        public void removeEdgeFromTouchingVertices(E e);
     }
 
     private static class ArrayListFactory<VV, EE>
@@ -660,8 +734,7 @@ public abstract class AbstractBaseGraph<V, E>
      * @author Barak Naveh
      */
     protected class DirectedSpecifics
-        extends Specifics
-        implements Serializable
+        implements Specifics<V, E>
     {
         private static final long serialVersionUID = 8971725103718958232L;
         static final String NOT_IN_DIRECTED_GRAPH =
@@ -835,7 +908,7 @@ public abstract class AbstractBaseGraph<V, E>
          *
          * @return EdgeContainer
          */
-        private DirectedEdgeContainer<V, E> getEdgeContainer(V vertex)
+        protected DirectedEdgeContainer<V, E> getEdgeContainer(V vertex)
         {
             assertVertexExist(vertex);
 
@@ -925,11 +998,10 @@ public abstract class AbstractBaseGraph<V, E>
      * @author Barak Naveh
      */
     protected class UndirectedSpecifics
-        extends Specifics
-        implements Serializable
+        implements Specifics<V, E>
     {
         private static final long serialVersionUID = 6494588405178655873L;
-        private static final String NOT_IN_UNDIRECTED_GRAPH =
+        protected static final String NOT_IN_UNDIRECTED_GRAPH =
             "no such operation in an undirected graph";
 
         private Map<V, UndirectedEdgeContainer<V, E>> vertexMapUndirected;
@@ -1018,7 +1090,7 @@ public abstract class AbstractBaseGraph<V, E>
             return null;
         }
 
-        private boolean isEqualsStraightOrInverted(
+        protected boolean isEqualsStraightOrInverted(
             Object sourceVertex,
             Object targetVertex,
             E e)
@@ -1125,7 +1197,7 @@ public abstract class AbstractBaseGraph<V, E>
          *
          * @return EdgeContainer
          */
-        private UndirectedEdgeContainer<V, E> getEdgeContainer(V vertex)
+        protected UndirectedEdgeContainer<V, E> getEdgeContainer(V vertex)
         {
             assertVertexExist(vertex);
 
@@ -1140,6 +1212,13 @@ public abstract class AbstractBaseGraph<V, E>
 
             return ec;
         }
+    }
+
+    /**
+     * @return the specifics
+     */
+    public Specifics<V, E> getSpecifics() {
+        return specifics;
     }
 }
 
