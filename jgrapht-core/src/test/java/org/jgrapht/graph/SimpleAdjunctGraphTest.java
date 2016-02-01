@@ -54,6 +54,7 @@ public class SimpleAdjunctGraphTest
     private String v4 = "v4";
     private String v5 = "v5";
     private String v6 = "v6";
+    private String v7 = "v7";
 
     private SimpleGraph<String, DefaultEdge> primary;
     private SimpleAdjunctGraph<String, DefaultEdge> adjunct;
@@ -69,119 +70,107 @@ public class SimpleAdjunctGraphTest
     @Override
     protected void setUp() throws Exception
     {
-        primary = new SimpleGraph<String, DefaultEdge>(
-                DefaultEdge.class);
+        // Construct a graph
+        //	V1_____ V2
+        //	  \____ V3____V4
+        primary = new SimpleGraph<String, DefaultEdge>(DefaultEdge.class);
         primary.addVertex(v1);
         primary.addVertex(v2);
+        primary.addVertex(v3);
+        primary.addVertex(v4);
         primary.addEdge(v1, v2);
-        primary.addEdge(v2, v1);
+        primary.addEdge(v1, v3);
+        primary.addEdge(v3, v4);
         adjunct = new SimpleAdjunctGraph<String, DefaultEdge>(primary);
-
     }
 
 //	protected void tearDown() throws Exception {
 //	}
 
     @Test
-    public void testAccessBase() {
+    public void testAccessPrimary() {
 
         assertTrue(adjunct.containsVertex(v1));
         assertTrue(adjunct.containsVertex(v2));
-        DefaultEdge e1 = adjunct.getEdge(v1, v2);
-        assertNotNull(e1);
-        DefaultEdge e2 = adjunct.getEdge(v2, v1);
-        assertNotNull(e2);
-    }
-
-    @Test
-    public void testProtectedBase() {
-
-        adjunct.removeVertex(v1);
-        assertFalse(adjunct.containsVertex(v1));
-        assertTrue(primary.containsVertex(v1));
-        DefaultEdge e1 = adjunct.getEdge(v1, v2);
-        assertNotNull(e1);
-        adjunct.removeEdge(e1);
-        assertFalse(adjunct.containsEdge(e1));
-        adjunct.removeEdge(v1, v2);
-        assertFalse(adjunct.containsEdge(e1));
-        assertTrue(primary.containsEdge(e1));
-    }
-
-    @Test
-    public void testJointGraph() {
-
-        adjunct.addVertex(v3);
         assertTrue(adjunct.containsVertex(v3));
-        adjunct.addVertex(v4);
-        DefaultEdge e1 = adjunct.addEdge(v3, v4);
-        assertTrue(adjunct.containsEdge(e1));
-        DefaultEdge e2 = adjunct.addEdge(v1, v3);
-        assertTrue(adjunct.containsEdge(e2));
-        assertTrue(adjunct.edgeSet().contains(e1));
-        assertTrue(adjunct.edgeSet().contains(e2));
-        assertTrue(adjunct.vertexSet().contains(v2));
-        assertTrue(adjunct.vertexSet().contains(v4));
-    }
-
-    @Test
-    public void testMultiAdjunct() {
-
-        adjunct.addVertex(v3);
-        assertTrue(adjunct.containsVertex(v3));
-        adjunct.addVertex(v4);
         assertTrue(adjunct.containsVertex(v4));
-        DefaultEdge e1 = adjunct.addEdge(v3, v4);
-        assertTrue(adjunct.containsEdge(e1));
-        DefaultEdge e2 = adjunct.addEdge(v1, v3);
-        assertTrue(adjunct.containsEdge(e2));
-        SimpleAdjunctGraph<String, DefaultEdge> adjunct2 = new SimpleAdjunctGraph<String, DefaultEdge>(adjunct);
-        adjunct2.addVertex(v5);
-        assertTrue(adjunct2.containsVertex(v5));
-        adjunct2.addVertex(v6);
-        assertTrue(adjunct2.vertexSet().contains(v6));
-        assertTrue(adjunct2.vertexSet().contains(v1));
-        assertTrue(adjunct2.vertexSet().contains(v3));
-        DefaultEdge e3 = adjunct2.addEdge(v5, v6);
-        assertTrue(adjunct2.containsEdge(e3));
-        DefaultEdge e4 = adjunct2.addEdge(v1, v6);
-        assertTrue(adjunct2.containsEdge(e4));
-        DefaultEdge e5 = adjunct2.addEdge(v3, v6);
-        assertTrue(adjunct2.containsEdge(e5));
-
-        assertTrue(adjunct.edgeSet().contains(e1));
-        assertTrue(adjunct.edgeSet().contains(e2));
-        assertTrue(adjunct.vertexSet().contains(v2));
-        assertTrue(adjunct.vertexSet().contains(v4));
+        DefaultEdge e12 = adjunct.getEdge(v1, v2);
+        assertNotNull(e12);
+        assertTrue(adjunct.containsEdge(e12));
+        DefaultEdge  e13 = adjunct.getEdge(v1, v3);
+        assertNotNull(e13);
+        assertTrue(adjunct.containsEdge(e13));
+        DefaultEdge e34 = adjunct.getEdge(v3, v4);
+        assertNotNull(e34);
+        assertTrue(adjunct.containsEdge(e34));
+        assertTrue(adjunct.edgesOf(v1).contains(e12));
+        assertTrue(adjunct.edgesOf(v1).contains(e13));
+        assertTrue(adjunct.edgesOf(v3).contains(e34));
+        assertTrue(adjunct.edgesOf(v3).contains(e13));
+        assertTrue(adjunct.edgesOf(v4).contains(e34));
     }
 
     @Test
     public void testAdjunctGraph() {
 
-        assertFalse(adjunct.adjunctContainsVertex(v1));
-        assertFalse(adjunct.adjunctVertexSet().contains(v1));
-        adjunct.addVertex(v3);
-        assertTrue(adjunct.adjunctContainsVertex(v3));
-        assertTrue(adjunct.adjunctVertexSet().contains(v3));
-        adjunct.addVertex(v4);
-        DefaultEdge e1 = adjunct.getEdge(v1, v2);
-        assertFalse(adjunct.adjunctContainsEdge(e1));
-        DefaultEdge e2 = adjunct.addEdge(v3, v4);
-        assertTrue(adjunct.adjunctContainsEdge(e2));
-        assertFalse(adjunct.adjunctEdgeSet().contains(e1));
-        assertTrue(adjunct.adjunctEdgeSet().contains(e2));
+         // Construct a graph
+        //	V1_____V2
+        //	  \      \____V5____V6
+        //     \     |
+        //      \____V3____V4
+        //             \
+        //              \____V7
+        adjunct.addVertex(v5);
+        assertTrue(adjunct.containsVertex(v5));
+        adjunct.addVertex(v6);
+        assertTrue(adjunct.containsVertex(v6));
+        adjunct.addVertex(v7);
+        assertTrue(adjunct.containsVertex(v7));
+        DefaultEdge e = adjunct.addEdge(v2, v5);
+        assertTrue(adjunct.containsEdge(e));
+        assertFalse(primary.containsEdge(e));
+        e = adjunct.addEdge(v5, v6);
+        assertTrue(adjunct.containsEdge(e));
+        e = adjunct.addEdge(v2, v3);
+        assertTrue(adjunct.containsEdge(e));
+        assertFalse(primary.containsEdge(e));
+        e = adjunct.addEdge(v3, v7);
+        assertTrue(adjunct.containsEdge(e));
     }
 
     @Test
-    public void testDeleteBase() {
+    public void testModifyAdjunctGraph() {
 
-        DefaultEdge e1 = adjunct.getEdge(v1, v2);
-        assertFalse(adjunct.adjunctContainsEdge(e1));
-        // Remove primary edge
-        adjunct.removeEdge(v1, v2);
-        assertFalse(adjunct.adjunctContainsEdge(e1));
+        // Construct a graph
+        //	V1_____V2
+        //	  \      \____V5____V6
+        //     \     |
+        //      \____V3____V4
+        //             \
+        //              \____V7
+        adjunct.addVertex(v5);
+        adjunct.addVertex(v6);
+        adjunct.addVertex(v7);
+        adjunct.addEdge(v2, v5);
+        DefaultEdge e56 = adjunct.addEdge(v5, v6);
+        adjunct.addEdge(v2, v3);
+        adjunct.addEdge(v3, v7);
+        // Transform too
+        //	V1_____V2____V6
+        //	  \      \____V5
+        //     \     |
+        //      \____V3____V4
+        adjunct.removeEdge(v5, v6);
+        assertFalse(adjunct.containsEdge(e56));
+        assertFalse(adjunct.edgesOf(v5).contains(v6));
+        adjunct.addEdge(v2, v6);
+        assertTrue(adjunct.edgesOf(v2).contains(v6));
+        assertFalse(primary.edgesOf(v2).contains(v6));
+        adjunct.removeVertex(v7);
+        assertFalse(adjunct.edgesOf(v3).contains(v7));
+        assertTrue(adjunct.edgesOf(v3).contains(v4));
+        assertTrue(adjunct.edgesOf(v3).contains(v2));
     }
-
 
 
 
