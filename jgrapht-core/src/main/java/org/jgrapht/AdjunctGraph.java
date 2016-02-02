@@ -55,14 +55,16 @@ import org.jgrapht.graph.UnmodifiableGraph;
 public interface AdjunctGraph<V, E> extends Graph<V, E> {
 
     /**
-     * Returns the graph that is the base for this graph. The source graph is
-     * wrapped in an UnmodifiableGraph to guarantee that it can not be modified
-     * while accessing the adjunct graph.
+     * Returns <tt>true</tt> if the adjunct portion of the graph contains the
+     * specified edge.
      *
-     * @return The base graph
+     * @see #containsEdge(Object)
+     * @param e edge whose presence in this graph is to be tested.
+     *
+     * @return <tt>true</tt> if this graph contains the specified edge.
      */
-    public Graph<V, E> getPrimaryGraph();
-    ////{@link #getComponentAt(int, int) getComponentAt} method.
+    public boolean adjunctContainsEdge(E e);
+
     /**
      * Returns <tt>true</tt> if and only if the adjunct portion of the graph
      * contains an edge going from the source vertex to the target vertex.
@@ -74,17 +76,6 @@ public interface AdjunctGraph<V, E> extends Graph<V, E> {
      * @return <tt>true</tt> if this graph contains the specified edge.
      */
     public boolean adjunctContainsEdge(V sourceVertex, V targetVertex);
-
-    /**
-     * Returns <tt>true</tt> if the adjunct portion of the graph contains the
-     * specified edge.
-     *
-     * @see #containsEdge(Object)
-     * @param e edge whose presence in this graph is to be tested.
-     *
-     * @return <tt>true</tt> if this graph contains the specified edge.
-     */
-    public boolean adjunctContainsEdge(E e);
 
     /**
      * Returns <tt>true</tt> if the adjunct portion of the graph contains the
@@ -130,5 +121,22 @@ public interface AdjunctGraph<V, E> extends Graph<V, E> {
      * @return a set view of the vertices contained in this graph.
      */
     public Set<V> adjunctVertexSet();
+
+    /**
+     * Returns the adjunct edge between the two vertices, if it exists.
+     * @param sourceVertex
+     * @param targetVertex
+     * @return
+     */
+    public E getAdjunctEdge(V sourceVertex, V targetVertex);
+
+    /**
+     * Returns the graph that is the base for this graph. The source graph is
+     * wrapped in an UnmodifiableGraph to guarantee that it can not be modified
+     * while accessing the adjunct graph.
+     *
+     * @return The base graph
+     */
+    public Graph<V, E> getPrimaryGraph();
 
 }

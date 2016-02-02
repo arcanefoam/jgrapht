@@ -95,19 +95,33 @@ public class SimpleAdjunctGraphTest
         assertTrue(adjunct.containsVertex(v3));
         assertTrue(adjunct.containsVertex(v4));
         DefaultEdge e12 = adjunct.getEdge(v1, v2);
-        assertNotNull(e12);
-        assertTrue(adjunct.containsEdge(e12));
         DefaultEdge  e13 = adjunct.getEdge(v1, v3);
-        assertNotNull(e13);
-        assertTrue(adjunct.containsEdge(e13));
         DefaultEdge e34 = adjunct.getEdge(v3, v4);
+        assertNotNull(e12);
+        assertNotNull(e13);
         assertNotNull(e34);
+        assertTrue(adjunct.getEdgeSource(e12).equals(v1));
+        assertTrue(adjunct.getEdgeTarget(e12).equals(v2));
+        assertTrue(adjunct.containsEdge(e12));
+        assertTrue(adjunct.getEdgeSource(e13).equals(v1));
+        assertTrue(adjunct.getEdgeTarget(e13).equals(v3));
+        assertTrue(adjunct.containsEdge(e13));
+        assertTrue(adjunct.getEdgeSource(e34).equals(v3));
+        assertTrue(adjunct.getEdgeTarget(e34).equals(v4));
         assertTrue(adjunct.containsEdge(e34));
         assertTrue(adjunct.edgesOf(v1).contains(e12));
         assertTrue(adjunct.edgesOf(v1).contains(e13));
         assertTrue(adjunct.edgesOf(v3).contains(e34));
         assertTrue(adjunct.edgesOf(v3).contains(e13));
         assertTrue(adjunct.edgesOf(v4).contains(e34));
+        assertEquals(2, adjunct.degreeOf(v1));
+        assertEquals(1, adjunct.degreeOf(v2));
+        assertEquals(2, adjunct.degreeOf(v3));
+        assertEquals(1, adjunct.degreeOf(v4));
+        assertTrue(adjunct.edgeSet().contains(e12));
+        assertTrue(adjunct.edgeSet().contains(e13));
+        assertTrue(adjunct.edgeSet().contains(e34));
+
     }
 
     @Test
@@ -121,25 +135,55 @@ public class SimpleAdjunctGraphTest
         //             \
         //              \____V7
         adjunct.addVertex(v5);
-        assertTrue(adjunct.containsVertex(v5));
         adjunct.addVertex(v6);
-        assertTrue(adjunct.containsVertex(v6));
         adjunct.addVertex(v7);
+        DefaultEdge e25 = adjunct.addEdge(v2, v5);
+        DefaultEdge e56 = adjunct.addEdge(v5, v6);
+        DefaultEdge e23 = adjunct.addEdge(v2, v3);
+        DefaultEdge e37 = adjunct.addEdge(v3, v7);
+
+        assertTrue(adjunct.containsVertex(v5));
+        assertTrue(adjunct.containsVertex(v6));
         assertTrue(adjunct.containsVertex(v7));
-        DefaultEdge e = adjunct.addEdge(v2, v5);
-        assertTrue(adjunct.containsEdge(e));
-        assertFalse(primary.containsEdge(e));
-        e = adjunct.addEdge(v5, v6);
-        assertTrue(adjunct.containsEdge(e));
-        e = adjunct.addEdge(v2, v3);
-        assertTrue(adjunct.containsEdge(e));
-        assertFalse(primary.containsEdge(e));
-        e = adjunct.addEdge(v3, v7);
-        assertTrue(adjunct.containsEdge(e));
+        assertTrue(adjunct.containsEdge(e25));
+        assertFalse(primary.containsEdge(e25));
+        assertTrue(adjunct.getEdgeSource(e25).equals(v2));
+        assertTrue(adjunct.getEdgeTarget(e25).equals(v5));
+        assertTrue(adjunct.containsEdge(e56));
+        assertFalse(primary.containsEdge(e56));
+        assertTrue(adjunct.getEdgeSource(e56).equals(v5));
+        assertTrue(adjunct.getEdgeTarget(e56).equals(v6));
+        assertTrue(adjunct.containsEdge(e23));
+        assertFalse(primary.containsEdge(e23));
+        assertTrue(adjunct.getEdgeSource(e23).equals(v2));
+        assertTrue(adjunct.getEdgeTarget(e23).equals(v3));
+        assertTrue(adjunct.containsEdge(e37));
+        assertFalse(primary.containsEdge(e37));
+        assertTrue(adjunct.getEdgeSource(e37).equals(v3));
+        assertTrue(adjunct.getEdgeTarget(e37).equals(v7));
+        assertEquals(2, adjunct.degreeOf(v1));
+        assertEquals(3, adjunct.degreeOf(v2));
+        assertEquals(4, adjunct.degreeOf(v3));
+        assertEquals(1, adjunct.degreeOf(v4));
+        assertEquals(2, adjunct.degreeOf(v5));
+        assertEquals(1, adjunct.degreeOf(v6));
+        assertEquals(1, adjunct.degreeOf(v7));
+        assertTrue(adjunct.edgeSet().contains(e25));
+        assertTrue(adjunct.edgeSet().contains(e56));
+        assertTrue(adjunct.edgeSet().contains(e23));
+        assertTrue(adjunct.edgeSet().contains(e37));
+        assertTrue(adjunct.edgesOf(v2).contains(e25));
+        assertTrue(adjunct.edgesOf(v5).contains(e25));
+        assertTrue(adjunct.edgesOf(v2).contains(e23));
+        assertTrue(adjunct.edgesOf(v3).contains(e23));
+        assertTrue(adjunct.edgesOf(v5).contains(e56));
+        assertTrue(adjunct.edgesOf(v6).contains(e56));
+        assertTrue(adjunct.edgesOf(v3).contains(e37));
+        assertTrue(adjunct.edgesOf(v7).contains(e37));
     }
 
     @Test
-    public void testModifyAdjunctGraph() {
+    public void testModifyGraph() {
 
         // Construct a graph
         //	V1_____V2
@@ -151,25 +195,52 @@ public class SimpleAdjunctGraphTest
         adjunct.addVertex(v5);
         adjunct.addVertex(v6);
         adjunct.addVertex(v7);
-        adjunct.addEdge(v2, v5);
+        DefaultEdge e25 = adjunct.addEdge(v2, v5);
         DefaultEdge e56 = adjunct.addEdge(v5, v6);
-        adjunct.addEdge(v2, v3);
-        adjunct.addEdge(v3, v7);
+        DefaultEdge e23 = adjunct.addEdge(v2, v3);
+        DefaultEdge e37 = adjunct.addEdge(v3, v7);
         // Transform too
         //	V1_____V2____V6
-        //	  \      \____V5
-        //     \     |
-        //      \____V3____V4
+        //	        \____V5
+        //                \
+        //      		  V3____V4___V7
+        assertFalse(primary.containsEdge(e23));
         adjunct.removeEdge(v5, v6);
         assertFalse(adjunct.containsEdge(e56));
-        assertFalse(adjunct.edgesOf(v5).contains(v6));
-        adjunct.addEdge(v2, v6);
-        assertTrue(adjunct.edgesOf(v2).contains(v6));
-        assertFalse(primary.edgesOf(v2).contains(v6));
-        adjunct.removeVertex(v7);
-        assertFalse(adjunct.edgesOf(v3).contains(v7));
-        assertTrue(adjunct.edgesOf(v3).contains(v4));
-        assertTrue(adjunct.edgesOf(v3).contains(v2));
+        assertFalse(adjunct.edgeSet().contains(e56));
+        assertFalse(adjunct.edgesOf(v5).contains(e56));
+        assertFalse(adjunct.edgesOf(v6).contains(e56));
+        assertEquals(1, adjunct.degreeOf(v5));
+        assertEquals(0, adjunct.degreeOf(v6));
+        DefaultEdge e26 = adjunct.addEdge(v2, v6);
+        assertTrue(adjunct.edgesOf(v2).contains(e26));
+        assertFalse(primary.edgesOf(v2).contains(26));
+        assertTrue(adjunct.getEdgeSource(e26).equals(v2));
+        assertTrue(adjunct.getEdgeTarget(e26).equals(v6));
+        DefaultEdge e13 = adjunct.removeEdge(v1, v3);
+        assertFalse(adjunct.containsEdge(e13));
+        assertTrue(primary.containsEdge(e13));
+        assertFalse(adjunct.edgesOf(v1).contains(e13));
+        assertFalse(adjunct.edgesOf(v3).contains(e13));
+        DefaultEdge e23d = adjunct.removeEdge(v2, v3);
+        assertEquals(e23, e23d);
+        assertFalse(adjunct.containsEdge(e23));
+        assertFalse(adjunct.edgesOf(v2).contains(e23));
+        assertFalse(adjunct.edgesOf(v3).contains(e23));
+        DefaultEdge e53 = adjunct.addEdge(v5, v3);
+        DefaultEdge e37d = adjunct.removeEdge(v3, v7);
+        assertEquals(e37, e37d);
+        DefaultEdge e47 = adjunct.addEdge(v4, v7);
+        DefaultEdge e12 = adjunct.edgesOf(v1).iterator().next();
+        assertTrue(adjunct.edgesOf(v1).contains(e12));
+        assertTrue(adjunct.edgesOf(v2).contains(e12));
+        assertTrue(adjunct.edgesOf(v2).contains(e26));
+        assertTrue(adjunct.edgesOf(v2).contains(e25));
+        assertEquals(3, adjunct.degreeOf(v2));
+        assertTrue(adjunct.edgesOf(v3).contains(e53));
+        DefaultEdge e34 = adjunct.getEdge(v3, v4);
+        assertTrue(adjunct.edgesOf(v3).contains(e34));
+        assertTrue(adjunct.containsEdge(e47));
     }
 
 

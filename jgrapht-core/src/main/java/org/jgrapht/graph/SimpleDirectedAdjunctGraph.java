@@ -36,7 +36,6 @@
  */
 package org.jgrapht.graph;
 
-import java.util.LinkedHashSet;
 import java.util.Set;
 
 import org.jgrapht.*;
@@ -69,63 +68,16 @@ public class SimpleDirectedAdjunctGraph<V, E>
 
 
     /* (non-Javadoc)
-     * @see org.jgrapht.graph.AbstractBaseGraph#degreeOf(java.lang.Object)
-     */
-    @Override public int degreeOf(V vertex)
-    {
-        throw new UnsupportedOperationException(DirectedSpecifics.NOT_IN_DIRECTED_GRAPH);
-    }
-
-    /* (non-Javadoc)
-     * @see org.jgrapht.graph.AbstractBaseGraph#inDegreeOf(java.lang.Object)
-     */
-    @Override public int inDegreeOf(V vertex)
-    {
-        int degree = super.inDegreeOf(vertex);
-        if (primaryGraph.containsVertex(vertex))
-            degree += primaryGraph.inDegreeOf(vertex);
-        return degree;
-    }
-
-    /* (non-Javadoc)
-     * @see org.jgrapht.graph.AbstractBaseGraph#incomingEdgesOf(java.lang.Object)
-     */
-    @Override public Set<E> incomingEdgesOf(V vertex)
-    {
-        Set<E> incoming = new LinkedHashSet<E>(super.incomingEdgesOf(vertex));
-        if (primaryGraph.containsVertex(vertex))
-            incoming.addAll(primaryGraph.incomingEdgesOf(vertex));
-        return incoming;
-    }
-
-    /* (non-Javadoc)
-     * @see org.jgrapht.graph.AbstractBaseGraph#outDegreeOf(java.lang.Object)
-     */
-    @Override public int outDegreeOf(V vertex)
-    {
-        int degree = super.outDegreeOf(vertex);
-        if (primaryGraph.containsVertex(vertex))
-            degree += primaryGraph.outDegreeOf(vertex);
-        return degree;
-    }
-
-    /* (non-Javadoc)
-     * @see org.jgrapht.graph.AbstractBaseGraph#outgoingEdgesOf(java.lang.Object)
-     */
-    @Override public Set<E> outgoingEdgesOf(V vertex)
-    {
-        Set<E> outgoing = new LinkedHashSet<E>(super.outgoingEdgesOf(vertex));
-        if (primaryGraph.containsVertex(vertex))
-            outgoing.addAll(primaryGraph.outgoingEdgesOf(vertex));
-        return outgoing;
-    }
-
-
-    /* (non-Javadoc)
      * @see org.jgrapht.DirectAdjunctGraph#adjunctInDegreeOf(java.lang.Object)
      */
     @Override public int adjunctInDegreeOf(V vertex) {
-        return super.inDegreeOf(vertex);
+        if (adjunctContainsVertex(vertex)) {
+            return super.inDegreeOf(vertex);
+        }
+        else {
+            throw new IllegalArgumentException(
+                "no such vertex in graph: " + vertex.toString());
+        }
     }
 
 
@@ -133,7 +85,13 @@ public class SimpleDirectedAdjunctGraph<V, E>
      * @see org.jgrapht.DirectAdjunctGraph#adjunctIncomingEdgesOf(java.lang.Object)
      */
     @Override public Set<E> adjunctIncomingEdgesOf(V vertex) {
-        return super.incomingEdgesOf(vertex);
+        if (adjunctContainsVertex(vertex)) {
+            return super.incomingEdgesOf(vertex);
+        }
+        else {
+            throw new IllegalArgumentException(
+                "no such vertex in graph: " + vertex.toString());
+        }
     }
 
 
@@ -141,15 +99,28 @@ public class SimpleDirectedAdjunctGraph<V, E>
      * @see org.jgrapht.DirectAdjunctGraph#adjunctOutDegreeOf(java.lang.Object)
      */
     @Override public int adjunctOutDegreeOf(V vertex) {
-        return super.outDegreeOf(vertex);
+        if (adjunctContainsVertex(vertex)) {
+            return super.outDegreeOf(vertex);
+        }
+        else {
+            throw new IllegalArgumentException(
+                "no such vertex in graph: " + vertex.toString());
+        }
     }
 
 
     /* (non-Javadoc)
      * @see org.jgrapht.DirectAdjunctGraph#adjunctOutgoingEdgesOf(java.lang.Object)
      */
-    @Override public Set<E> adjunctOutgoingEdgesOf(V vertex) {
-        return super.outgoingEdgesOf(vertex);
+    @Override public Set<E> adjunctOutgoingEdgesOf(V vertex)
+    {
+        if (adjunctContainsVertex(vertex)) {
+            return super.outgoingEdgesOf(vertex);
+        }
+        else {
+            throw new IllegalArgumentException(
+                "no such vertex in graph: " + vertex.toString());
+        }
     }
 
 }

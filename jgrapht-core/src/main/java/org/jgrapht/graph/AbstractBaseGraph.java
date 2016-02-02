@@ -459,7 +459,7 @@ public abstract class AbstractBaseGraph<V, E>
             // ConcurrentModificationException
             removeAllEdges(new ArrayList<>(touchingEdgesList));
 
-            specifics.getVertexSet().remove(v); // remove the vertex itself
+            specifics.removeVertex(v); // remove the vertex itself
 
             return true;
         } else {
@@ -540,15 +540,17 @@ public abstract class AbstractBaseGraph<V, E>
 
         public void addVertex(V vertex);
 
+        public void removeVertex(V v);
+
         public Set<E> edgeSet();
 
-		public boolean containsEdge(E e);
+        public boolean containsEdge(E e);
 
-		public V getEdgeSource(E e);
+        public V getEdgeSource(E e);
 
-		public V getEdgeTarget(E e);
+        public V getEdgeTarget(E e);
 
-		public abstract Set<V> getVertexSet();
+        public abstract Set<V> getVertexSet();
 
         /**
          * @see Graph#getAllEdges(Object, Object)
@@ -565,7 +567,7 @@ public abstract class AbstractBaseGraph<V, E>
          * target vertices.
          *
          * @param e
-         * @param ie 
+         * @param ie
          */
         public void addEdgeToTouchingVertices(E e, IntrusiveEdge ie);
 
@@ -732,7 +734,7 @@ public abstract class AbstractBaseGraph<V, E>
             "no such operation in a directed graph";
 
         private Map<V, DirectedEdgeContainer<V, E>> vertexMapDirected;
-        private Map<E, IntrusiveEdge> edgeMap;
+        protected Map<E, IntrusiveEdge> edgeMap;
 
         public DirectedSpecifics()
         {
@@ -810,7 +812,7 @@ public abstract class AbstractBaseGraph<V, E>
 
         @Override public void addEdgeToTouchingVertices(E e, IntrusiveEdge ie)
         {
-        	edgeMap.put(e, ie);
+            edgeMap.put(e, ie);
             V source = getEdgeSource(e);
             V target = getEdgeTarget(e);
             getEdgeContainer(source).addOutgoingEdge(e);
@@ -916,44 +918,49 @@ public abstract class AbstractBaseGraph<V, E>
             return ec;
         }
 
-		@Override
-		public V getEdgeTarget(E e) {
-			return TypeUtil.uncheckedCast(
-		            getIntrusiveEdge(e).target,
-		            vertexTypeDecl);
-		}
-		
-		@Override
-		public V getEdgeSource(E e) {
-			return TypeUtil.uncheckedCast(
-		            getIntrusiveEdge(e).source,
-		            vertexTypeDecl);
-		}
-		
-		private IntrusiveEdge getIntrusiveEdge(E e)
-	    {
-	        if (e instanceof IntrusiveEdge) {
-	            return (IntrusiveEdge) e;
-	        }
+        @Override
+        public V getEdgeTarget(E e) {
+            return TypeUtil.uncheckedCast(
+                    getIntrusiveEdge(e).target,
+                    vertexTypeDecl);
+        }
 
-	        return edgeMap.get(e);
-	    }
+        @Override
+        public V getEdgeSource(E e) {
+            return TypeUtil.uncheckedCast(
+                    getIntrusiveEdge(e).source,
+                    vertexTypeDecl);
+        }
 
-		@Override
-		public boolean containsEdge(E e) {
-			return edgeMap.containsKey(e);
-		}
+        private IntrusiveEdge getIntrusiveEdge(E e)
+        {
+            if (e instanceof IntrusiveEdge) {
+                return (IntrusiveEdge) e;
+            }
 
-		@Override
-		public Set<E> edgeSet() {
-			if (unmodifiableEdgeSet == null) {
-	            unmodifiableEdgeSet = Collections.unmodifiableSet(edgeMap.keySet());
-	        }
+            return edgeMap.get(e);
+        }
 
-	        return unmodifiableEdgeSet;
-		}
+        @Override
+        public boolean containsEdge(E e) {
+            return edgeMap.containsKey(e);
+        }
 
-		
+        @Override
+        public Set<E> edgeSet() {
+            if (unmodifiableEdgeSet == null) {
+                unmodifiableEdgeSet = Collections.unmodifiableSet(edgeMap.keySet());
+            }
+
+            return unmodifiableEdgeSet;
+        }
+
+        @Override
+        public void removeVertex(V v) {
+            vertexMapDirected.keySet().remove(v);
+        }
+
+
     }
 
     /**
@@ -1038,7 +1045,7 @@ public abstract class AbstractBaseGraph<V, E>
             "no such operation in an undirected graph";
 
         private Map<V, UndirectedEdgeContainer<V, E>> vertexMapUndirected;
-        private Map<E, IntrusiveEdge> edgeMap;
+        protected Map<E, IntrusiveEdge> edgeMap;
 
         public UndirectedSpecifics()
         {
@@ -1142,7 +1149,7 @@ public abstract class AbstractBaseGraph<V, E>
 
         @Override public void addEdgeToTouchingVertices(E e, IntrusiveEdge ie)
         {
-        	edgeMap.put(e, ie);
+            edgeMap.put(e, ie);
             V source = getEdgeSource(e);
             V target = getEdgeTarget(e);
 
@@ -1227,6 +1234,10 @@ public abstract class AbstractBaseGraph<V, E>
             edgeMap.remove(e);
         }
 
+        @Override public void removeVertex(V v) {
+            vertexMapUndirected.keySet().remove(v);
+        }
+
         /**
          * A lazy build of edge container for specified vertex.
          *
@@ -1250,44 +1261,44 @@ public abstract class AbstractBaseGraph<V, E>
             return ec;
         }
 
-		@Override
-		public V getEdgeTarget(E e) {
-			return TypeUtil.uncheckedCast(
-		            getIntrusiveEdge(e).target,
-		            vertexTypeDecl);
-		}
-		
-		@Override
-		public V getEdgeSource(E e) {
-			return TypeUtil.uncheckedCast(
-		            getIntrusiveEdge(e).source,
-		            vertexTypeDecl);
-		}
-		
-		private IntrusiveEdge getIntrusiveEdge(E e)
-	    {
-	        if (e instanceof IntrusiveEdge) {
-	            return (IntrusiveEdge) e;
-	        }
+        @Override
+        public V getEdgeTarget(E e) {
+            return TypeUtil.uncheckedCast(
+                    getIntrusiveEdge(e).target,
+                    vertexTypeDecl);
+        }
 
-	        return edgeMap.get(e);
-	    }
+        @Override
+        public V getEdgeSource(E e) {
+            return TypeUtil.uncheckedCast(
+                    getIntrusiveEdge(e).source,
+                    vertexTypeDecl);
+        }
 
-		@Override
-		public boolean containsEdge(E e) {
-			return edgeMap.containsKey(e);
-		}
+        private IntrusiveEdge getIntrusiveEdge(E e)
+        {
+            if (e instanceof IntrusiveEdge) {
+                return (IntrusiveEdge) e;
+            }
 
-		@Override
-		public Set<E> edgeSet() {
-			if (unmodifiableEdgeSet == null) {
-	            unmodifiableEdgeSet = Collections.unmodifiableSet(edgeMap.keySet());
-	        }
+            return edgeMap.get(e);
+        }
 
-	        return unmodifiableEdgeSet;
-		}
+        @Override
+        public boolean containsEdge(E e) {
+            return edgeMap.containsKey(e);
+        }
 
-		
+        @Override
+        public Set<E> edgeSet() {
+            if (unmodifiableEdgeSet == null) {
+                unmodifiableEdgeSet = Collections.unmodifiableSet(edgeMap.keySet());
+            }
+
+            return unmodifiableEdgeSet;
+        }
+
+
     }
 
     /**
