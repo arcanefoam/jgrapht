@@ -48,7 +48,7 @@ import org.jgrapht.*;
  */
 public class SimpleAdjunctGraph<V, E>
     extends AbstractAdjunctGraph<V, E>
-    implements UndirectedGraph<V, E>,AdjunctUndirectedGraph<V, E>
+    implements UndirectedGraph<V, E>, AdjunctUndirectedGraph<V, E>
 {
 
     private static final long serialVersionUID = 4722568089288079444L;
@@ -57,15 +57,5 @@ public class SimpleAdjunctGraph<V, E>
         super(primaryGraph, false, false);
     }
 
-    @Override
-    public int adjunctDegreeOf(V vertex) {
-        if (adjunctContainsVertex(vertex)) {
-            return super.degreeOf(vertex);
-        }
-        else {
-            throw new IllegalArgumentException(
-                "no such vertex in graph: " + vertex.toString());
-        }
-    }
 
 }

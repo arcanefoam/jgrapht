@@ -66,11 +66,11 @@ public abstract class AbstractAdjunctGraph<V, E>
     /** The Constant serialVersionUID. */
     private static final long serialVersionUID = 5730647889266263861L;
 
-    /** The primary graph. */
-    protected UnmodifiableGraph<V,E> primaryGraph;
-
     /** The adjunc specifics. */
     private AdjunctSpecifics<V, E> adjuncSpecifics;
+
+    /** The primary graph. */
+    protected UnmodifiableGraph<V,E> primaryGraph;
 
     /**
      * Instantiates a new abstract adjunct graph.
@@ -109,6 +109,23 @@ public abstract class AbstractAdjunctGraph<V, E>
         return adjuncSpecifics.getAdjunctVertexSet().contains(v);
     }
 
+    /**
+     * Adjunct degree of.
+     *
+     * @param vertex the vertex
+     * @return the int
+     * @see AdjunctUndirectedGraph#adjunctDegreeOf(Object)
+     */
+    public int adjunctDegreeOf(V vertex) {
+        if (adjunctContainsVertex(vertex)) {
+            return super.degreeOf(vertex);
+        }
+        else {
+            throw new IllegalArgumentException(
+                "no such vertex in graph: " + vertex.toString());
+        }
+    }
+
     /* (non-Javadoc)
      * @see org.jgrapht.AdjunctGraph#adjunctEdgeSet()
      */
@@ -125,6 +142,75 @@ public abstract class AbstractAdjunctGraph<V, E>
         return adjuncSpecifics.adjunctEdgesOf(vertex);
     }
 
+    /**
+     * Adjunct incoming edges of.
+     *
+     * @param vertex the vertex
+     * @return the sets the
+     * @see DirectAdjunctGraph#adjunctIncomingEdgesOf(Object)
+     */
+    public Set<E> adjunctIncomingEdgesOf(V vertex) {
+        if (adjunctContainsVertex(vertex)) {
+            return super.incomingEdgesOf(vertex);
+        }
+        else {
+            throw new IllegalArgumentException(
+                "no such vertex in graph: " + vertex.toString());
+        }
+    }
+
+    /**
+     * Adjunct in degree of.
+     *
+     * @param vertex the vertex
+     * @return the int
+     * @see DirectAdjunctGraph#adjunctInDegreeOf(Object)
+     */
+    public int adjunctInDegreeOf(V vertex) {
+        if (adjunctContainsVertex(vertex)) {
+            return super.inDegreeOf(vertex);
+        }
+        else {
+            throw new IllegalArgumentException(
+                "no such vertex in graph: " + vertex.toString());
+        }
+    }
+
+    /**
+     * Adjunct out degree of.
+     *
+     * @param vertex the vertex
+     * @return the int
+     * @see DirectAdjunctGraph#adjunctOutDegreeOf(Object)
+     */
+    public int adjunctOutDegreeOf(V vertex) {
+        if (adjunctContainsVertex(vertex)) {
+            return super.outDegreeOf(vertex);
+        }
+        else {
+            throw new IllegalArgumentException(
+                "no such vertex in graph: " + vertex.toString());
+        }
+    }
+
+    /**
+     * Adjunct outgoing edges of.
+     *
+     * @param vertex the vertex
+     * @return the sets the
+     * @see DirectAdjunctGraph#adjunctOutgoingEdgesOf(Object)
+     */
+    public Set<E> adjunctOutgoingEdgesOf(V vertex)
+    {
+        if (adjunctContainsVertex(vertex)) {
+            return super.outgoingEdgesOf(vertex);
+        }
+        else {
+            throw new IllegalArgumentException(
+                "no such vertex in graph: " + vertex.toString());
+        }
+    }
+
     /* (non-Javadoc)
      * @see org.jgrapht.AdjunctGraph#adjunctVertexSet()
      */
@@ -133,6 +219,13 @@ public abstract class AbstractAdjunctGraph<V, E>
         return adjuncSpecifics.getAdjunctVertexSet();
     }
 
+
+    /* (non-Javadoc)
+     * @see org.jgrapht.AdjunctGraph#getAdjunctEdge(java.lang.Object, java.lang.Object)
+     */
+    @Override public E getAdjunctEdge(V sourceVertex, V targetVertex) {
+        return adjuncSpecifics.getAdjunctEdge(sourceVertex, targetVertex);
+    }
 
     /* (non-Javadoc)
      * @see org.jgrapht.AdjunctGraph#getPrimaryGraph()
@@ -173,27 +266,16 @@ public abstract class AbstractAdjunctGraph<V, E>
         }
     }
 
-    /* (non-Javadoc)
-     * @see org.jgrapht.AdjunctGraph#getAdjunctEdge(java.lang.Object, java.lang.Object)
+    /**
+     * Vertex set.
+     *
+     * @return the sets the
+     * @see Graph#vertexSet()
      */
-    @Override public E getAdjunctEdge(V sourceVertex, V targetVertex) {
-        return adjuncSpecifics.getAdjunctEdge(sourceVertex, targetVertex);
-    }
-
-    /* (non-Javadoc)
-     * @see org.jgrapht.graph.AbstractBaseGraph#createDirectedSpecifics()
-     */
-    @Override protected DirectedSpecifics createDirectedSpecifics()
+    @Override public Set<V> vertexSet()
     {
-        return new AdjunctDirectedSpecifics();
-    }
-
-    /* (non-Javadoc)
-     * @see org.jgrapht.graph.AbstractBaseGraph#createUndirectedSpecifics()
-     */
-    @Override protected UndirectedSpecifics createUndirectedSpecifics()
-    {
-        return new AdjunctUndirectedSpecifics();
+        // In adjunct graphs the vertex set is dynamic so it can't be accessed with a view and can be modified
+        return adjuncSpecifics.getVertexSet();
     }
 
     /**
@@ -220,6 +302,22 @@ public abstract class AbstractAdjunctGraph<V, E>
         }
     }
 
+    /* (non-Javadoc)
+     * @see org.jgrapht.graph.AbstractBaseGraph#createDirectedSpecifics()
+     */
+    @Override protected DirectedSpecifics createDirectedSpecifics()
+    {
+        return new AdjunctDirectedSpecifics();
+    }
+
+    /* (non-Javadoc)
+     * @see org.jgrapht.graph.AbstractBaseGraph#createUndirectedSpecifics()
+     */
+    @Override protected UndirectedSpecifics createUndirectedSpecifics()
+    {
+        return new AdjunctUndirectedSpecifics();
+    }
+
     /**
      * An adjunct graph specifics extends the DirectedSpecifics to allow tracking of deleted vertices and edges in the
      * primary graph.
@@ -237,11 +335,11 @@ public abstract class AbstractAdjunctGraph<V, E>
         /** The negative edges. */
         private Set<E> negativeEdges = new HashSet<E>();
 
-        /** The negative vertices. */
-        private Set<V> negativeVertices = new HashSet<V>();
-
         /** The negative vertex map directed. */
         private Map<V, DirectedEdgeContainer<V, E>> negativeVertexMapDirected;
+
+        /** The negative vertices. */
+        private Set<V> negativeVertices = new HashSet<V>();
 
         /** The primary vertex map directed. */
         private Map<V, DirectedEdgeContainer<V, E>> primaryVertexMapDirected;
@@ -297,12 +395,38 @@ public abstract class AbstractAdjunctGraph<V, E>
         }
 
         /* (non-Javadoc)
+         * @see org.jgrapht.graph.AbstractAdjunctGraph.AdjunctSpecifics#adjunctContainsEdge(java.lang.Object)
+         */
+        @Override public boolean adjunctContainsEdge(E e)
+        {
+            return super.containsEdge(e);
+        }
+
+        /* (non-Javadoc)
+         * @see org.jgrapht.graph.AbstractAdjunctGraph.AdjunctSpecifics#adjunctEdgesOf(java.lang.Object)
+         */
+        @Override public Set<E> adjunctEdgesOf(V vertex)
+        {
+            return super.edgesOf(vertex);
+        }
+
+        /* (non-Javadoc)
          * @see org.jgrapht.graph.AbstractBaseGraph.DirectedSpecifics#containsEdge(java.lang.Object)
          */
         @Override public boolean containsEdge(E e)
         {
             return !negativeEdges.contains(e)
                     && (edgeMap.containsKey(e) || primaryGraph.containsEdge(e));
+        }
+
+        /* (non-Javadoc)
+         * @see org.jgrapht.graph.AbstractBaseGraph.UndirectedSpecifics#edgeSet()
+         */
+        @Override public Set<E> edgeSet() {
+            Set<E> edges = new LinkedHashSet<E>(super.edgeSet());
+            edges.addAll(primaryGraph.edgeSet());
+            edges.removeAll(negativeEdges);
+            return Collections.unmodifiableSet(edges);
         }
 
         /* (non-Javadoc)
@@ -343,13 +467,27 @@ public abstract class AbstractAdjunctGraph<V, E>
         }
 
         /* (non-Javadoc)
-         * @see org.jgrapht.graph.AbstractBaseGraph.UndirectedSpecifics#edgeSet()
+         * @see org.jgrapht.graph.AbstractAdjunctGraph.AdjunctSpecifics#getAdjunctEdge(java.lang.Object, java.lang.Object)
          */
-        @Override public Set<E> edgeSet() {
-            Set<E> edges = new LinkedHashSet<E>(super.edgeSet());
-            edges.addAll(primaryGraph.edgeSet());
-            edges.removeAll(negativeEdges);
-            return Collections.unmodifiableSet(edges);
+        @Override public E getAdjunctEdge(V sourceVertex, V targetVertex)
+        {
+            return super.getEdge(sourceVertex, targetVertex);
+        }
+
+        /* (non-Javadoc)
+         * @see org.jgrapht.graph.AbstractAdjunctGraph.AdjunctSpecifics#getAdjunctEdgeSet()
+         */
+        @Override public Set<E> getAdjunctEdgeSet()
+        {
+            return super.edgeSet();
+        }
+
+        /* (non-Javadoc)
+         * @see org.jgrapht.graph.AbstractAdjunctGraph.AdjunctSpecifics#getAdjunctVertexSet()
+         */
+        @Override public Set<V> getAdjunctVertexSet()
+        {
+            return super.getVertexSet();
         }
 
         /* (non-Javadoc)
@@ -387,33 +525,6 @@ public abstract class AbstractAdjunctGraph<V, E>
             return null;
         }
 
-        /**
-         * Gets the all negative edges.
-         *
-         * @param sourceVertex the source vertex
-         * @param targetVertex the target vertex
-         * @return the all negative edges
-         */
-        private Set<E> getAllNegativeEdges(V sourceVertex, V targetVertex)
-        {
-            assert !adjunctContainsVertex(sourceVertex);
-            primaryGraph.assertVertexExist(sourceVertex);
-            DirectedEdgeContainer<V, E> nec = getNegativeEdgeContainer(sourceVertex);
-            if ((nec != null)) {
-                Set<E> edges = new ArrayUnenforcedSet<E>();
-
-                Iterator<E> iter = nec.outgoing.iterator();
-                while (iter.hasNext()) {
-                    E e = iter.next();
-                    if (getEdgeTarget(e).equals(targetVertex)) {
-                        edges.add(e);
-                    }
-                }
-                return edges;
-            }
-            return Collections.emptySet();
-        }
-
         /* (non-Javadoc)
          * @see org.jgrapht.graph.AbstractBaseGraph.DirectedSpecifics#getEdge(java.lang.Object, java.lang.Object)
          */
@@ -444,20 +555,6 @@ public abstract class AbstractAdjunctGraph<V, E>
         }
 
         /* (non-Javadoc)
-         * @see org.jgrapht.graph.AbstractBaseGraph.DirectedSpecifics#getEdgeTarget(java.lang.Object)
-         */
-        @Override
-        public V getEdgeTarget(E e) {
-            assertEdgeExist(e);
-            if (adjunctContainsEdge(e)) {
-                return super.getEdgeTarget(e);
-            }
-            else {
-                return primaryGraph.getEdgeTarget(e);
-            }
-        }
-
-        /* (non-Javadoc)
          * @see org.jgrapht.graph.AbstractBaseGraph.DirectedSpecifics#getEdgeSource(java.lang.Object)
          */
         @Override
@@ -468,6 +565,20 @@ public abstract class AbstractAdjunctGraph<V, E>
             }
             else {
                 return primaryGraph.getEdgeSource(e);
+            }
+        }
+
+        /* (non-Javadoc)
+         * @see org.jgrapht.graph.AbstractBaseGraph.DirectedSpecifics#getEdgeTarget(java.lang.Object)
+         */
+        @Override
+        public V getEdgeTarget(E e) {
+            assertEdgeExist(e);
+            if (adjunctContainsEdge(e)) {
+                return super.getEdgeTarget(e);
+            }
+            else {
+                return primaryGraph.getEdgeTarget(e);
             }
         }
 
@@ -521,6 +632,179 @@ public abstract class AbstractAdjunctGraph<V, E>
                 return degree;
             }
         }
+
+        /* (non-Javadoc)
+         * @see org.jgrapht.graph.AbstractBaseGraph.DirectedSpecifics#outDegreeOf(java.lang.Object)
+         */
+        @Override public int outDegreeOf(V vertex)
+        {
+            if (adjunctContainsVertex(vertex)) {		// Avoid adding primary vertices to the adjunct vertexMapDirected
+                return super.outDegreeOf(vertex);
+            }
+            else {
+                // Degree from primary
+                int degree = primaryGraph.outDegreeOf(vertex);
+                DirectedEdgeContainer<V, E> pec = getPrimaryEdgeContainer(vertex);
+                if (pec != null) {
+                    degree +=  pec.outgoing.size();
+                }
+                degree -= negativeOutDegreeOf(vertex);
+                return degree;
+            }
+        }
+
+        /* (non-Javadoc)
+         * @see org.jgrapht.graph.AbstractBaseGraph.DirectedSpecifics#outgoingEdgesOf(java.lang.Object)
+         */
+        @Override public Set<E> outgoingEdgesOf(V vertex)
+        {
+            if (adjunctContainsVertex(vertex)) {	// Avoid adding primary vertices to the adjunct vertexMapDirected
+                return super.outgoingEdgesOf(vertex);
+            }
+            else {
+                Set<E> edges = new LinkedHashSet<E>(primaryGraph.outgoingEdgesOf(vertex));
+                DirectedEdgeContainer<V, E> pec = getPrimaryEdgeContainer(vertex);
+                if (pec != null) {
+                    edges.addAll(new LinkedHashSet<E>(pec.outgoing));
+                }
+                edges.removeAll(negativeOutgoingEdgesOf(vertex));
+                return edges;
+            }
+        }
+
+        /* (non-Javadoc)
+         * @see org.jgrapht.graph.AbstractBaseGraph.DirectedSpecifics#removeEdgeFromTouchingVertices(java.lang.Object)
+         */
+        @Override public void removeEdgeFromTouchingVertices(E e)
+        {
+            V source = getEdgeSource(e);
+            V target = getEdgeTarget(e);
+            if (edgeMap.containsKey(e)) {
+                if (adjunctContainsVertex(source)
+                        && adjunctContainsVertex(target)) {
+                    super.removeEdgeFromTouchingVertices(e);
+                } else {
+                    DirectedEdgeContainer<V, E> pec;
+                    if (adjunctContainsVertex(source)) {
+                        getEdgeContainer(source).removeOutgoingEdge(e);
+                    } else {
+                        assert primaryGraph.containsVertex(source);
+                        pec = getPrimaryEdgeContainer(source);
+                        assert pec != null;
+                        pec.removeOutgoingEdge(e);
+                    }
+                    if (adjunctContainsVertex(target)) {
+                        getEdgeContainer(target).removeIncomingEdge(e);
+                    } else {
+                        assert primaryGraph.containsVertex(target);
+                        pec = getPrimaryEdgeContainer(target);
+                        assert pec != null;
+                        pec.removeIncomingEdge(e);
+                    }
+                }
+                edgeMap.remove(e);
+            }
+            else {
+                assert primaryGraph.containsVertex(source);
+                // add with a lazy edge container entry
+                if (!negativeVertexMapDirected.containsKey(source))
+                    negativeVertexMapDirected.put(source, null);
+                getNegativeEdgeContainer(source).addOutgoingEdge(e);
+                assert primaryGraph.containsVertex(target);
+                // add with a lazy edge container entry
+                if (!negativeVertexMapDirected.containsKey(target))
+                    negativeVertexMapDirected.put(target, null);
+                getNegativeEdgeContainer(target).addIncomingEdge(e);
+                negativeEdges.add(e);
+            }
+        }
+
+        /* (non-Javadoc)
+         * @see org.jgrapht.graph.AbstractBaseGraph.DirectedSpecifics#removeVertex(java.lang.Object)
+         */
+        @Override public void removeVertex(V v) {
+            if (adjunctContainsVertex(v)) {
+                super.removeVertex(v);
+            }
+            else {
+                if (primaryGraph.containsVertex(v)) {
+                    negativeVertices.add(v);
+                }
+            }
+        }
+
+        /**
+         * Gets the all negative edges.
+         *
+         * @param sourceVertex the source vertex
+         * @param targetVertex the target vertex
+         * @return the all negative edges
+         */
+        private Set<E> getAllNegativeEdges(V sourceVertex, V targetVertex)
+        {
+            assert !adjunctContainsVertex(sourceVertex);
+            primaryGraph.assertVertexExist(sourceVertex);
+            DirectedEdgeContainer<V, E> nec = getNegativeEdgeContainer(sourceVertex);
+            if ((nec != null)) {
+                Set<E> edges = new ArrayUnenforcedSet<E>();
+
+                Iterator<E> iter = nec.outgoing.iterator();
+                while (iter.hasNext()) {
+                    E e = iter.next();
+                    if (getEdgeTarget(e).equals(targetVertex)) {
+                        edges.add(e);
+                    }
+                }
+                return edges;
+            }
+            return Collections.emptySet();
+        }
+
+        /**
+         * A lazy build of edge container for specified vertex.
+         *
+         * @param vertex a vertex in this graph.
+         *
+         * @return EdgeContainer
+         */
+        private DirectedEdgeContainer<V, E> getNegativeEdgeContainer(V vertex)
+        {
+            assert !adjunctContainsVertex(vertex);
+            primaryGraph.assertVertexExist(vertex);
+            DirectedEdgeContainer<V, E> ec = null;
+            if (negativeVertexMapDirected.containsKey(vertex)) {
+                ec = negativeVertexMapDirected.get(vertex);
+                if (ec == null) {
+                    ec = new DirectedEdgeContainer<V, E>(edgeSetFactory, vertex);
+                    negativeVertexMapDirected.put(vertex, ec);
+                }
+            }
+            return ec;
+        }
+
+        /**
+         * A lazy build of edge container for specified vertex. A separate map is kept for edges that belong to this
+         * graph, but connect vertices in the primary graph.
+         *
+         * @param vertex a vertex in this graph.
+         *
+         * @return EdgeContainer
+         */
+        private DirectedEdgeContainer<V, E> getPrimaryEdgeContainer(V vertex)
+        {
+            assert !adjunctContainsVertex(vertex);
+            primaryGraph.assertVertexExist(vertex);
+            DirectedEdgeContainer<V, E> ec = null;
+            if (primaryVertexMapDirected.containsKey(vertex)) {
+                ec = primaryVertexMapDirected.get(vertex);
+                if (ec == null) {
+                    ec = new DirectedEdgeContainer<V, E>(edgeSetFactory, vertex);
+                    primaryVertexMapDirected.put(vertex, ec);
+                }
+            }
+            return ec;
+        }
+
 
         /**
          * Negative edges of.
@@ -625,192 +909,6 @@ public abstract class AbstractAdjunctGraph<V, E>
             return Collections.emptySet();
         }
 
-        /* (non-Javadoc)
-         * @see org.jgrapht.graph.AbstractBaseGraph.DirectedSpecifics#outDegreeOf(java.lang.Object)
-         */
-        @Override public int outDegreeOf(V vertex)
-        {
-            if (adjunctContainsVertex(vertex)) {		// Avoid adding primary vertices to the adjunct vertexMapDirected
-                return super.outDegreeOf(vertex);
-            }
-            else {
-                // Degree from primary
-                int degree = primaryGraph.outDegreeOf(vertex);
-                DirectedEdgeContainer<V, E> pec = getPrimaryEdgeContainer(vertex);
-                if (pec != null) {
-                    degree +=  pec.outgoing.size();
-                }
-                degree -= negativeOutDegreeOf(vertex);
-                return degree;
-            }
-        }
-
-        /* (non-Javadoc)
-         * @see org.jgrapht.graph.AbstractBaseGraph.DirectedSpecifics#outgoingEdgesOf(java.lang.Object)
-         */
-        @Override public Set<E> outgoingEdgesOf(V vertex)
-        {
-            if (adjunctContainsVertex(vertex)) {	// Avoid adding primary vertices to the adjunct vertexMapDirected
-                return super.outgoingEdgesOf(vertex);
-            }
-            else {
-                Set<E> edges = new LinkedHashSet<E>(primaryGraph.outgoingEdgesOf(vertex));
-                DirectedEdgeContainer<V, E> pec = getPrimaryEdgeContainer(vertex);
-                if (pec != null) {
-                    edges.addAll(new LinkedHashSet<E>(pec.outgoing));
-                }
-                edges.removeAll(negativeOutgoingEdgesOf(vertex));
-                return edges;
-            }
-        }
-
-        /* (non-Javadoc)
-         * @see org.jgrapht.graph.AbstractBaseGraph.DirectedSpecifics#removeVertex(java.lang.Object)
-         */
-        @Override public void removeVertex(V v) {
-            if (adjunctContainsVertex(v)) {
-                super.removeVertex(v);
-            }
-            else {
-                if (primaryGraph.containsVertex(v)) {
-                    negativeVertices.add(v);
-                }
-            }
-        }
-
-        /* (non-Javadoc)
-         * @see org.jgrapht.graph.AbstractBaseGraph.DirectedSpecifics#removeEdgeFromTouchingVertices(java.lang.Object)
-         */
-        @Override public void removeEdgeFromTouchingVertices(E e)
-        {
-            V source = getEdgeSource(e);
-            V target = getEdgeTarget(e);
-            if (edgeMap.containsKey(e)) {
-                if (adjunctContainsVertex(source)
-                        && adjunctContainsVertex(target)) {
-                    super.removeEdgeFromTouchingVertices(e);
-                } else {
-                    DirectedEdgeContainer<V, E> pec;
-                    if (adjunctContainsVertex(source)) {
-                        getEdgeContainer(source).removeOutgoingEdge(e);
-                    } else {
-                        assert primaryGraph.containsVertex(source);
-                        pec = getPrimaryEdgeContainer(source);
-                        assert pec != null;
-                        pec.removeOutgoingEdge(e);
-                    }
-                    if (adjunctContainsVertex(target)) {
-                        getEdgeContainer(target).removeIncomingEdge(e);
-                    } else {
-                        assert primaryGraph.containsVertex(target);
-                        pec = getPrimaryEdgeContainer(target);
-                        assert pec != null;
-                        pec.removeIncomingEdge(e);
-                    }
-                }
-                edgeMap.remove(e);
-            }
-            else {
-                assert primaryGraph.containsVertex(source);
-                // add with a lazy edge container entry
-                if (!negativeVertexMapDirected.containsKey(source))
-                    negativeVertexMapDirected.put(source, null);
-                getNegativeEdgeContainer(source).addOutgoingEdge(e);
-                assert primaryGraph.containsVertex(target);
-                // add with a lazy edge container entry
-                if (!negativeVertexMapDirected.containsKey(target))
-                    negativeVertexMapDirected.put(target, null);
-                getNegativeEdgeContainer(target).addIncomingEdge(e);
-                negativeEdges.add(e);
-            }
-        }
-
-        /**
-         * A lazy build of edge container for specified vertex.
-         *
-         * @param vertex a vertex in this graph.
-         *
-         * @return EdgeContainer
-         */
-        private DirectedEdgeContainer<V, E> getNegativeEdgeContainer(V vertex)
-        {
-            assert !adjunctContainsVertex(vertex);
-            primaryGraph.assertVertexExist(vertex);
-            DirectedEdgeContainer<V, E> ec = null;
-            if (negativeVertexMapDirected.containsKey(vertex)) {
-                ec = negativeVertexMapDirected.get(vertex);
-                if (ec == null) {
-                    ec = new DirectedEdgeContainer<V, E>(edgeSetFactory, vertex);
-                    negativeVertexMapDirected.put(vertex, ec);
-                }
-            }
-            return ec;
-        }
-
-        /**
-         * A lazy build of edge container for specified vertex. A separate map is kept for edges that belong to this
-         * graph, but connect vertices in the primary graph.
-         *
-         * @param vertex a vertex in this graph.
-         *
-         * @return EdgeContainer
-         */
-        private DirectedEdgeContainer<V, E> getPrimaryEdgeContainer(V vertex)
-        {
-            assert !adjunctContainsVertex(vertex);
-            primaryGraph.assertVertexExist(vertex);
-            DirectedEdgeContainer<V, E> ec = null;
-            if (primaryVertexMapDirected.containsKey(vertex)) {
-                ec = primaryVertexMapDirected.get(vertex);
-                if (ec == null) {
-                    ec = new DirectedEdgeContainer<V, E>(edgeSetFactory, vertex);
-                    primaryVertexMapDirected.put(vertex, ec);
-                }
-            }
-            return ec;
-        }
-
-
-        /* (non-Javadoc)
-         * @see org.jgrapht.graph.AbstractAdjunctGraph.AdjunctSpecifics#getAdjunctVertexSet()
-         */
-        @Override public Set<V> getAdjunctVertexSet()
-        {
-            return super.getVertexSet();
-        }
-
-        /* (non-Javadoc)
-         * @see org.jgrapht.graph.AbstractAdjunctGraph.AdjunctSpecifics#adjunctEdgesOf(java.lang.Object)
-         */
-        @Override public Set<E> adjunctEdgesOf(V vertex)
-        {
-            return super.edgesOf(vertex);
-        }
-
-        /* (non-Javadoc)
-         * @see org.jgrapht.graph.AbstractAdjunctGraph.AdjunctSpecifics#getAdjunctEdgeSet()
-         */
-        @Override public Set<E> getAdjunctEdgeSet()
-        {
-            return super.edgeSet();
-        }
-
-        /* (non-Javadoc)
-         * @see org.jgrapht.graph.AbstractAdjunctGraph.AdjunctSpecifics#adjunctContainsEdge(java.lang.Object)
-         */
-        @Override public boolean adjunctContainsEdge(E e)
-        {
-            return super.containsEdge(e);
-        }
-
-        /* (non-Javadoc)
-         * @see org.jgrapht.graph.AbstractAdjunctGraph.AdjunctSpecifics#getAdjunctEdge(java.lang.Object, java.lang.Object)
-         */
-        @Override public E getAdjunctEdge(V sourceVertex, V targetVertex)
-        {
-            return super.getEdge(sourceVertex, targetVertex);
-        }
-
     }
 
 
@@ -829,12 +927,13 @@ public abstract class AbstractAdjunctGraph<V, E>
     {
 
         /**
-         * Gets the adjunct vertex set.
+         * Adjunct contains edge.
          *
-         * @return the adjunct vertex set
-         * @see AdjunctGraph#getAdjunctVertexSet()
+         * @param e the e
+         * @return true, if successful
+         * @see AdjunctGraph#adjunctContainsEdge(Object)
          */
-        public Set<V> getAdjunctVertexSet();
+        public boolean adjunctContainsEdge(E e);
 
         /**
          * Adjunct edges of.
@@ -846,23 +945,6 @@ public abstract class AbstractAdjunctGraph<V, E>
         public Set<E> adjunctEdgesOf(V vertex);
 
         /**
-         * Gets the adjunct edge set.
-         *
-         * @return the adjunct edge set
-         * @see AdjunctGraph#adjunctEdgeSet()
-         */
-        public Set<E> getAdjunctEdgeSet();
-
-        /**
-         * Adjunct contains edge.
-         *
-         * @param e the e
-         * @return true, if successful
-         * @see AdjunctGraph#adjunctContainsEdge(Object)
-         */
-        public boolean adjunctContainsEdge(E e);
-
-        /**
          * Gets the adjunct edge.
          *
          * @param sourceVertex the source vertex
@@ -871,6 +953,22 @@ public abstract class AbstractAdjunctGraph<V, E>
          * @see AdjunctGraph#getAdjunctEdge(Object, Object)
          */
         public E getAdjunctEdge(V sourceVertex, V targetVertex);
+
+        /**
+         * Gets the adjunct edge set.
+         *
+         * @return the adjunct edge set
+         * @see AdjunctGraph#adjunctEdgeSet()
+         */
+        public Set<E> getAdjunctEdgeSet();
+
+        /**
+         * Gets the adjunct vertex set.
+         *
+         * @return the adjunct vertex set
+         * @see AdjunctGraph#getAdjunctVertexSet()
+         */
+        public Set<V> getAdjunctVertexSet();
 
 //		/**
 //         * Gets the all negative edges.
@@ -962,11 +1060,11 @@ public abstract class AbstractAdjunctGraph<V, E>
         /** The negative edges. */
         private Set<E> negativeEdges = new HashSet<E>();
 
-        /** The negative vertices. */
-        private Set<V> negativeVertices = new HashSet<V>();
-
         /** The negative vertex map directed. */
         private Map<V, UndirectedEdgeContainer<V, E>> negativeVertexMapUndirected;
+
+        /** The negative vertices. */
+        private Set<V> negativeVertices = new HashSet<V>();
 
         /** The primary vertex map directed. */
         private Map<V, UndirectedEdgeContainer<V, E>> primaryVertexMapUndirected;
@@ -1024,6 +1122,22 @@ public abstract class AbstractAdjunctGraph<V, E>
         }
 
         /* (non-Javadoc)
+         * @see org.jgrapht.graph.AbstractAdjunctGraph.AdjunctSpecifics#adjunctContainsEdge(java.lang.Object)
+         */
+        @Override public boolean adjunctContainsEdge(E e)
+        {
+            return super.containsEdge(e);
+        }
+
+        /* (non-Javadoc)
+         * @see org.jgrapht.graph.AbstractAdjunctGraph.AdjunctSpecifics#adjunctEdgesOf(java.lang.Object)
+         */
+        @Override public Set<E> adjunctEdgesOf(V vertex)
+        {
+            return super.edgesOf(vertex);
+        }
+
+        /* (non-Javadoc)
          * @see org.jgrapht.graph.AbstractBaseGraph.UndirectedSpecifics#containsEdge(java.lang.Object)
          */
         @Override public boolean containsEdge(E e)
@@ -1067,6 +1181,16 @@ public abstract class AbstractAdjunctGraph<V, E>
         }
 
         /* (non-Javadoc)
+         * @see org.jgrapht.graph.AbstractBaseGraph.UndirectedSpecifics#edgeSet()
+         */
+        @Override public Set<E> edgeSet() {
+            Set<E> edges = new LinkedHashSet<E>(super.edgeSet());
+            edges.addAll(primaryGraph.edgeSet());
+            edges.removeAll(negativeEdges);
+            return Collections.unmodifiableSet(edges);
+        }
+
+        /* (non-Javadoc)
          * @see org.jgrapht.graph.AbstractBaseGraph.UndirectedSpecifics#edgesOf(java.lang.Object)
          */
         @Override public Set<E> edgesOf(V vertex)
@@ -1086,13 +1210,27 @@ public abstract class AbstractAdjunctGraph<V, E>
         }
 
         /* (non-Javadoc)
-         * @see org.jgrapht.graph.AbstractBaseGraph.UndirectedSpecifics#edgeSet()
+         * @see org.jgrapht.graph.AbstractAdjunctGraph.AdjunctSpecifics#getAdjunctEdge(java.lang.Object, java.lang.Object)
          */
-        @Override public Set<E> edgeSet() {
-            Set<E> edges = new LinkedHashSet<E>(super.edgeSet());
-            edges.addAll(primaryGraph.edgeSet());
-            edges.removeAll(negativeEdges);
-            return Collections.unmodifiableSet(edges);
+        @Override public E getAdjunctEdge(V sourceVertex, V targetVertex)
+        {
+            return super.getEdge(sourceVertex, targetVertex);
+        }
+
+        /* (non-Javadoc)
+         * @see org.jgrapht.graph.AbstractAdjunctGraph.AdjunctSpecifics#getAdjunctEdgeSet()
+         */
+        @Override public Set<E> getAdjunctEdgeSet()
+        {
+            return super.edgeSet();
+        }
+
+        /* (non-Javadoc)
+         * @see org.jgrapht.graph.AbstractAdjunctGraph.AdjunctSpecifics#getAdjunctVertexSet()
+         */
+        @Override public Set<V> getAdjunctVertexSet()
+        {
+            return super.getVertexSet();
         }
 
         /* (non-Javadoc)
@@ -1132,37 +1270,6 @@ public abstract class AbstractAdjunctGraph<V, E>
             return null;
         }
 
-        /**
-         * Gets the all negative edges.
-         *
-         * @param sourceVertex the source vertex
-         * @param targetVertex the target vertex
-         * @return the all negative edges
-         */
-        private Set<E> getAllNegativeEdges(V sourceVertex, V targetVertex) {
-
-            assert !adjunctContainsVertex(sourceVertex);
-            primaryGraph.assertVertexExist(sourceVertex);
-            UndirectedEdgeContainer<V, E> nec = getNegativeEdgeContainer(sourceVertex);
-            if ((nec != null) && containsVertex(targetVertex)) {
-                Set<E> edges = new ArrayUnenforcedSet<E>();
-                Iterator<E> iter = nec.vertexEdges.iterator();
-                while (iter.hasNext()) {
-                    E e = iter.next();
-                    boolean equal =
-                            isEqualsStraightOrInverted(
-                                sourceVertex,
-                                targetVertex,
-                                e);
-                    if (equal) {
-                        edges.add(e);
-                    }
-                }
-                return edges;
-            }
-            return Collections.emptySet();
-        }
-
         /* (non-Javadoc)
          * @see org.jgrapht.graph.AbstractBaseGraph.UndirectedSpecifics#getEdge(java.lang.Object, java.lang.Object)
          */
@@ -1200,19 +1307,6 @@ public abstract class AbstractAdjunctGraph<V, E>
             return null;
         }
 
-        /* (non-Javadoc)
-         * @see org.jgrapht.graph.AbstractBaseGraph.UndirectedSpecifics#getEdgeTarget(java.lang.Object)
-         */
-        @Override
-        public V getEdgeTarget(E e) {
-            assertEdgeExist(e);
-            if (adjunctContainsEdge(e)) {
-                return super.getEdgeTarget(e);
-            }
-            else {
-                return primaryGraph.getEdgeTarget(e);
-            }
-        }
 
         /* (non-Javadoc)
          * @see org.jgrapht.graph.AbstractBaseGraph.UndirectedSpecifics#getEdgeSource(java.lang.Object)
@@ -1229,6 +1323,20 @@ public abstract class AbstractAdjunctGraph<V, E>
         }
 
         /* (non-Javadoc)
+         * @see org.jgrapht.graph.AbstractBaseGraph.UndirectedSpecifics#getEdgeTarget(java.lang.Object)
+         */
+        @Override
+        public V getEdgeTarget(E e) {
+            assertEdgeExist(e);
+            if (adjunctContainsEdge(e)) {
+                return super.getEdgeTarget(e);
+            }
+            else {
+                return primaryGraph.getEdgeTarget(e);
+            }
+        }
+
+        /* (non-Javadoc)
          * @see org.jgrapht.graph.AbstractBaseGraph.UndirectedSpecifics#getVertexSet()
          */
         @Override public Set<V> getVertexSet()
@@ -1237,56 +1345,6 @@ public abstract class AbstractAdjunctGraph<V, E>
             vertices.addAll(primaryGraph.vertexSet());
             vertices.removeAll(negativeVertices);
             return vertices;
-        }
-
-        /**
-         * Negative degree of.
-         *
-         * @param vertex the vertex
-         * @return the int
-         */
-        private int negativeDegreeOf(V vertex)
-        {
-            assert !adjunctContainsVertex(vertex);
-            primaryGraph.assertVertexExist(vertex);
-            UndirectedEdgeContainer<V, E> nec = getNegativeEdgeContainer(vertex);
-            if (nec != null) {
-                if (allowingLoops) { // then we must count, and add loops twice
-                    int degree = 0;
-                    if (nec != null) {
-                        Set<E> edges = nec.vertexEdges;
-                        for (E e : edges) {
-                            if (getEdgeSource(e).equals(getEdgeTarget(e))) {
-                                degree += 2;
-                            } else {
-                                degree += 1;
-                            }
-                        }
-                    }
-                    return degree;
-                } else {
-                    return nec.edgeCount();
-                }
-            }
-            return 0;
-        }
-
-
-        /**
-         * Negative edges of.
-         *
-         * @param vertex the vertex
-         * @return the sets the
-         */
-        private Set<E> negativeEdgesOf(V vertex)
-        {
-            assert !adjunctContainsVertex(vertex);
-            primaryGraph.assertVertexExist(vertex);
-            UndirectedEdgeContainer<V, E> ec = getNegativeEdgeContainer(vertex);
-            if (ec != null) {
-                return ec.getUnmodifiableVertexEdges();
-            }
-            return Collections.emptySet();
         }
 
         /* (non-Javadoc)
@@ -1339,6 +1397,51 @@ public abstract class AbstractAdjunctGraph<V, E>
             }
         }
 
+        /* (non-Javadoc)
+         * @see org.jgrapht.graph.AbstractBaseGraph.UndirectedSpecifics#removeVertex(java.lang.Object)
+         */
+        @Override public void removeVertex(V v) {
+            if (adjunctContainsVertex(v)) {
+                super.removeVertex(v);
+            }
+            else {
+                if (primaryGraph.containsVertex(v)) {
+                    negativeVertices.add(v);
+                }
+            }
+        }
+
+        /**
+         * Gets the all negative edges.
+         *
+         * @param sourceVertex the source vertex
+         * @param targetVertex the target vertex
+         * @return the all negative edges
+         */
+        private Set<E> getAllNegativeEdges(V sourceVertex, V targetVertex) {
+
+            assert !adjunctContainsVertex(sourceVertex);
+            primaryGraph.assertVertexExist(sourceVertex);
+            UndirectedEdgeContainer<V, E> nec = getNegativeEdgeContainer(sourceVertex);
+            if ((nec != null) && containsVertex(targetVertex)) {
+                Set<E> edges = new ArrayUnenforcedSet<E>();
+                Iterator<E> iter = nec.vertexEdges.iterator();
+                while (iter.hasNext()) {
+                    E e = iter.next();
+                    boolean equal =
+                            isEqualsStraightOrInverted(
+                                sourceVertex,
+                                targetVertex,
+                                e);
+                    if (equal) {
+                        edges.add(e);
+                    }
+                }
+                return edges;
+            }
+            return Collections.emptySet();
+        }
+
         /**
          * A lazy build of edge container for specified vertex.
          *
@@ -1389,58 +1492,53 @@ public abstract class AbstractAdjunctGraph<V, E>
 
         }
 
-        /* (non-Javadoc)
-         * @see org.jgrapht.graph.AbstractBaseGraph.UndirectedSpecifics#removeVertex(java.lang.Object)
+        /**
+         * Negative degree of.
+         *
+         * @param vertex the vertex
+         * @return the int
          */
-        @Override public void removeVertex(V v) {
-            if (adjunctContainsVertex(v)) {
-                super.removeVertex(v);
-            }
-            else {
-                if (primaryGraph.containsVertex(v)) {
-                    negativeVertices.add(v);
+        private int negativeDegreeOf(V vertex)
+        {
+            assert !adjunctContainsVertex(vertex);
+            primaryGraph.assertVertexExist(vertex);
+            UndirectedEdgeContainer<V, E> nec = getNegativeEdgeContainer(vertex);
+            if (nec != null) {
+                if (allowingLoops) { // then we must count, and add loops twice
+                    int degree = 0;
+                    if (nec != null) {
+                        Set<E> edges = nec.vertexEdges;
+                        for (E e : edges) {
+                            if (getEdgeSource(e).equals(getEdgeTarget(e))) {
+                                degree += 2;
+                            } else {
+                                degree += 1;
+                            }
+                        }
+                    }
+                    return degree;
+                } else {
+                    return nec.edgeCount();
                 }
             }
+            return 0;
         }
 
-        /* (non-Javadoc)
-         * @see org.jgrapht.graph.AbstractAdjunctGraph.AdjunctSpecifics#getAdjunctVertexSet()
+        /**
+         * Negative edges of.
+         *
+         * @param vertex the vertex
+         * @return the sets the
          */
-        @Override public Set<V> getAdjunctVertexSet()
+        private Set<E> negativeEdgesOf(V vertex)
         {
-            return super.getVertexSet();
-        }
-
-        /* (non-Javadoc)
-         * @see org.jgrapht.graph.AbstractAdjunctGraph.AdjunctSpecifics#adjunctEdgesOf(java.lang.Object)
-         */
-        @Override public Set<E> adjunctEdgesOf(V vertex)
-        {
-            return super.edgesOf(vertex);
-        }
-
-        /* (non-Javadoc)
-         * @see org.jgrapht.graph.AbstractAdjunctGraph.AdjunctSpecifics#getAdjunctEdgeSet()
-         */
-        @Override public Set<E> getAdjunctEdgeSet()
-        {
-            return super.edgeSet();
-        }
-
-        /* (non-Javadoc)
-         * @see org.jgrapht.graph.AbstractAdjunctGraph.AdjunctSpecifics#adjunctContainsEdge(java.lang.Object)
-         */
-        @Override public boolean adjunctContainsEdge(E e)
-        {
-            return super.containsEdge(e);
-        }
-
-        /* (non-Javadoc)
-         * @see org.jgrapht.graph.AbstractAdjunctGraph.AdjunctSpecifics#getAdjunctEdge(java.lang.Object, java.lang.Object)
-         */
-        @Override public E getAdjunctEdge(V sourceVertex, V targetVertex)
-        {
-            return super.getEdge(sourceVertex, targetVertex);
+            assert !adjunctContainsVertex(vertex);
+            primaryGraph.assertVertexExist(vertex);
+            UndirectedEdgeContainer<V, E> ec = getNegativeEdgeContainer(vertex);
+            if (ec != null) {
+                return ec.getUnmodifiableVertexEdges();
+            }
+            return Collections.emptySet();
         }
 
 

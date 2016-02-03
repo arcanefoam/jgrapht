@@ -31,39 +31,23 @@
  *
  * Changes
  * -------
- * 28-Nov-2015 : Initial revision (HH);
+ * 03-Feb-2016 : Initial revision (HH);
  *
  */
 package org.jgrapht.graph;
 
-import org.jgrapht.*;
+import org.jgrapht.DirectAdjunctGraph;
+import org.jgrapht.DirectedGraph;
+import org.jgrapht.Graph;
+
+public class DirectedAdjunctPseudograph<V, E> extends AbstractAdjunctGraph<V, E>
+        implements DirectAdjunctGraph<V, E>, DirectedGraph<V, E> {
 
 
-/**
- * The Class SimpleDirectedAdjunctGraph is the simplest implementation of a directed adjunct graph.
- *
- * @param <V> the value type
- * @param <E> the element type
- */
-public class SimpleDirectedAdjunctGraph<V, E>
-    extends AbstractAdjunctGraph<V, E>
-    implements DirectedGraph<V, E>, DirectAdjunctGraph<V, E>
-{
+    private static final long serialVersionUID = 4300687180513804587L;
 
-    /** The Constant serialVersionUID. */
-    private static final long serialVersionUID = -5296261373996749227L;
-
-
-    /**
-     * Instantiates a new simple directed adjunct graph, with the same constraints as a {@link DefaultDirectedGraph}
-     *
-     * @param base the base
-     */
-    public SimpleDirectedAdjunctGraph(DirectedGraph<V, E> primaryGraph) {
-        super(primaryGraph,  false, true);
+    public DirectedAdjunctPseudograph(Graph<V, E> primaryGraph) {
+        super(primaryGraph, true, true);
     }
-
-
-
 
 }
