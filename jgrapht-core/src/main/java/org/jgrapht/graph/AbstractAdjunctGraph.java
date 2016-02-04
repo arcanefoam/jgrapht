@@ -374,6 +374,7 @@ public abstract class AbstractAdjunctGraph<V, E>
         @Override public void addEdgeToTouchingVertices(E e, IntrusiveEdge ie)
         {
             edgeMap.put(e, ie);
+            negativeEdges.remove(e); 		// In case edges might be equal()
             V source = getEdgeSource(e);
             V target = getEdgeTarget(e);
             if (adjunctContainsVertex(source)) {
@@ -415,8 +416,9 @@ public abstract class AbstractAdjunctGraph<V, E>
          */
         @Override public boolean containsEdge(E e)
         {
-            return !negativeEdges.contains(e)
-                    && (edgeMap.containsKey(e) || primaryGraph.containsEdge(e));
+            if (negativeEdges.contains(e))
+                return false;
+            return edgeMap.containsKey(e) || primaryGraph.containsEdge(e);
         }
 
         /* (non-Javadoc)
@@ -543,12 +545,15 @@ public abstract class AbstractAdjunctGraph<V, E>
                             while (iter.hasNext()) {
                                 E e = iter.next();
                                 if (getEdgeTarget(e).equals(targetVertex)) {
-                                    return e;
+                                    e2 = e;
+                                    break;
                                 }
                             }
                         }
                     }
-                    return e2;
+                    if (!negativeEdges.contains(e2)) {
+                        return e2;
+                    }
                 }
             }
             return null;
@@ -559,7 +564,7 @@ public abstract class AbstractAdjunctGraph<V, E>
          */
         @Override
         public V getEdgeSource(E e) {
-            assertEdgeExist(e);
+            //assertEdgeExist(e);
             if (adjunctContainsEdge(e)) {
                 return super.getEdgeSource(e);
             }
@@ -573,7 +578,6 @@ public abstract class AbstractAdjunctGraph<V, E>
          */
         @Override
         public V getEdgeTarget(E e) {
-            assertEdgeExist(e);
             if (adjunctContainsEdge(e)) {
                 return super.getEdgeTarget(e);
             }
@@ -1099,6 +1103,7 @@ public abstract class AbstractAdjunctGraph<V, E>
         @Override public void addEdgeToTouchingVertices(E e, IntrusiveEdge ie)
         {
             edgeMap.put(e, ie);
+            negativeEdges.remove(e);		// In case edges might be equal()
             V source = getEdgeSource(e);
             V target = getEdgeTarget(e);
             if (adjunctContainsVertex(source)) {
@@ -1296,12 +1301,15 @@ public abstract class AbstractAdjunctGraph<V, E>
                                         e);
 
                                 if (equal) {
-                                    return e;
+                                    e2 = e;
+                                    break;
                                 }
                             }
                         }
                     }
-                    return e2;
+                    if (!negativeEdges.contains(e2)) {
+                        return e2;
+                    }
                 }
             }
             return null;
@@ -1313,7 +1321,7 @@ public abstract class AbstractAdjunctGraph<V, E>
          */
         @Override
         public V getEdgeSource(E e) {
-            assertEdgeExist(e);
+            //assertEdgeExist(e);
             if (adjunctContainsEdge(e)) {
                 return super.getEdgeSource(e);
             }
@@ -1327,7 +1335,7 @@ public abstract class AbstractAdjunctGraph<V, E>
          */
         @Override
         public V getEdgeTarget(E e) {
-            assertEdgeExist(e);
+            //assertEdgeExist(e);
             if (adjunctContainsEdge(e)) {
                 return super.getEdgeTarget(e);
             }
