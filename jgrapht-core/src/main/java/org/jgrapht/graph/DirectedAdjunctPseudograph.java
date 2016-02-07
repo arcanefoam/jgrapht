@@ -41,7 +41,7 @@ import org.jgrapht.DirectedGraph;
 import org.jgrapht.Graph;
 
 public class DirectedAdjunctPseudograph<V, E> extends AbstractAdjunctGraph<V, E>
-        implements DirectAdjunctGraph<V, E>, DirectedGraph<V, E> {
+        implements DirectAdjunctGraph<V, E> {
 
 
     private static final long serialVersionUID = 4300687180513804587L;

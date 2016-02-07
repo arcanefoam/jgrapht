@@ -47,7 +47,7 @@ import org.jgrapht.*;
  */
 public class SimpleDirectedAdjunctGraph<V, E>
     extends AbstractAdjunctGraph<V, E>
-    implements DirectedGraph<V, E>, DirectAdjunctGraph<V, E>
+    implements DirectAdjunctGraph<V, E>
 {
 
     /** The Constant serialVersionUID. */

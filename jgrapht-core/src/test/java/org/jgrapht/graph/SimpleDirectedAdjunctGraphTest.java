@@ -188,6 +188,7 @@ public class SimpleDirectedAdjunctGraphTest
         DefaultEdge e13 = adjunct.removeEdge(v1, v3);
         assertFalse(adjunct.containsEdge(e13));
         assertTrue(primary.containsEdge(e13));
+        assertFalse(adjunct.removeEdge(e13));		// Can't remove edge twice
         assertFalse(adjunct.outgoingEdgesOf(v1).contains(e13));
         assertFalse(adjunct.incomingEdgesOf(v3).contains(e13));
         DefaultEdge e23d = adjunct.removeEdge(v2, v3);
@@ -223,6 +224,44 @@ public class SimpleDirectedAdjunctGraphTest
         assertTrue(adjunct.incomingEdgesOf(v4).contains(e34));
         assertTrue(adjunct.outgoingEdgesOf(v4).contains(e47));
         assertTrue(adjunct.incomingEdgesOf(v7).contains(e47));
+        // Add a previously deleted edge
+        e13 = adjunct.addEdge(v1, v3);
+        assertTrue(adjunct.containsEdge(e13));
+        assertTrue(adjunct.edgesOf(v3).contains(e13));
+    }
+
+    @Test
+    public void testInsertPathGraph() {
+
+        // Construct a graph
+        //	V1_____ V2
+        //	  \____ v5___v6___V4
+        DefaultEdge e13 = adjunct.getEdge(v1, v3);
+        DefaultEdge e34 = adjunct.getEdge(v1, v3);
+        assertNotNull(e13);
+        assertNotNull(e34);
+        adjunct.removeVertex(v3);
+        assertFalse(adjunct.edgeSet().contains(e13));
+        assertFalse(adjunct.edgeSet().contains(e34));
+        assertTrue(primary.edgeSet().contains(e13));
+        assertTrue(primary.edgeSet().contains(e34));
+        adjunct.addVertex(v5);
+        adjunct.addVertex(v6);
+        DefaultEdge e15 = adjunct.addEdge(v1, v5);
+        DefaultEdge e56 = adjunct.addEdge(v5, v6);
+        DefaultEdge e64 = adjunct.addEdge(v6, v4);
+        assertTrue(adjunct.outgoingEdgesOf(v1).contains(e15));
+        assertTrue(adjunct.incomingEdgesOf(v6).contains(e56));
+        assertTrue(adjunct.incomingEdgesOf(v4).contains(e64));
+        // Transform too
+        // 	V1_____ V2
+        //	  \____ v5___v7___V4
+        adjunct.removeVertex(v6);
+        adjunct.addVertex(v7);
+        DefaultEdge e74 = adjunct.addEdge(v7, v4);
+        DefaultEdge e57 = adjunct.addEdge(v5, v7);
+        assertTrue(adjunct.incomingEdgesOf(v4).contains(e74));
+        assertTrue(adjunct.incomingEdgesOf(v7).contains(e57));
     }
 
 }

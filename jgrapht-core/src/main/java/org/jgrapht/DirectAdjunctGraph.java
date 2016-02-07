@@ -32,21 +32,21 @@
  * Changes
  * -------
  * 25-Jan-2016 : Initial revision (HH);
- * 
+ *
  */
 package org.jgrapht;
 
 import java.util.Set;
 
 /**
- * A Direct Adjunct Graph provides the {@link DirectedGraph} methods to access only members of the adjunct graph. 
+ * A Direct Adjunct Graph provides the {@link DirectedGraph} methods to access only members of the adjunct graph.
  *
  * @param <V> the value type
  * @param <E> the element type
  */
-public interface DirectAdjunctGraph<V, E> extends AdjunctGraph<V, E> {
+public interface DirectAdjunctGraph<V, E> extends DirectedGraph<V, E> {
 
-	/**
+    /**
      * Returns the "in degree" of the specified vertex. An in degree of a vertex
      * in a directed graph is the number of inward directed edges from that
      * vertex. See <a href="http://mathworld.wolfram.com/Indegree.html">

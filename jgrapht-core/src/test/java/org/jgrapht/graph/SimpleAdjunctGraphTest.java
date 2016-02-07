@@ -201,9 +201,9 @@ public class SimpleAdjunctGraphTest
         DefaultEdge e37 = adjunct.addEdge(v3, v7);
         // Transform too
         //	V1_____V2____V6
-        //	        \____V5
-        //                \
-        //      		  V3____V4___V7
+        //	 \      \____V5
+        //    \           \
+        //     \**********V3____V4___V7
         assertFalse(primary.containsEdge(e23));
         adjunct.removeEdge(v5, v6);
         assertFalse(adjunct.containsEdge(e56));
@@ -241,6 +241,10 @@ public class SimpleAdjunctGraphTest
         DefaultEdge e34 = adjunct.getEdge(v3, v4);
         assertTrue(adjunct.edgesOf(v3).contains(e34));
         assertTrue(adjunct.containsEdge(e47));
+        // Add a previously deleted edge
+        e13 = adjunct.addEdge(v1, v3);
+        assertTrue(adjunct.containsEdge(e13));
+        assertTrue(adjunct.edgesOf(v3).contains(e13));
     }
 
 
