@@ -67,7 +67,7 @@ public abstract class AbstractAdjunctGraph<V, E>
     private static final long serialVersionUID = 5730647889266263861L;
 
     /** The adjunc specifics. */
-    private AdjunctSpecifics<V, E> adjuncSpecifics;
+    private AdjunctSpecifics<V, E> adjunctSpecifics;
 
     /** The primary graph. */
     protected UnmodifiableGraph<V,E> primaryGraph;
@@ -82,7 +82,7 @@ public abstract class AbstractAdjunctGraph<V, E>
     public AbstractAdjunctGraph(Graph<V, E> primaryGraph, boolean allowMultipleEdges, boolean allowLoops) {
         super(primaryGraph.getEdgeFactory(), allowMultipleEdges, allowLoops);
         this.primaryGraph = new UnmodifiableGraph<V, E>(primaryGraph);
-        adjuncSpecifics = (AdjunctSpecifics<V, E>) getSpecifics();
+        adjunctSpecifics = (AdjunctSpecifics<V, E>) getSpecifics();
     }
 
     /* (non-Javadoc)
@@ -90,7 +90,7 @@ public abstract class AbstractAdjunctGraph<V, E>
      */
     @Override public boolean adjunctContainsEdge(E e)
     {
-        return adjuncSpecifics.adjunctContainsEdge(e);
+        return adjunctSpecifics.adjunctContainsEdge(e);
     }
 
     /* (non-Javadoc)
@@ -98,7 +98,7 @@ public abstract class AbstractAdjunctGraph<V, E>
      */
     @Override public boolean adjunctContainsEdge(V sourceVertex, V targetVertex)
     {
-        return adjuncSpecifics.getAdjunctEdge(sourceVertex, targetVertex) != null;
+        return adjunctSpecifics.getAdjunctEdge(sourceVertex, targetVertex) != null;
     }
 
     /* (non-Javadoc)
@@ -106,7 +106,7 @@ public abstract class AbstractAdjunctGraph<V, E>
      */
     @Override public boolean adjunctContainsVertex(V v)
     {
-        return adjuncSpecifics.getAdjunctVertexSet().contains(v);
+        return adjunctSpecifics.getAdjunctVertexSet().contains(v);
     }
 
     /**
@@ -131,7 +131,7 @@ public abstract class AbstractAdjunctGraph<V, E>
      */
     @Override public Set<E> adjunctEdgeSet()
     {
-        return adjuncSpecifics.getAdjunctEdgeSet();
+        return adjunctSpecifics.getAdjunctEdgeSet();
     }
 
     /* (non-Javadoc)
@@ -139,7 +139,7 @@ public abstract class AbstractAdjunctGraph<V, E>
      */
     @Override public Set<E> adjunctEdgesOf(V vertex)
     {
-        return adjuncSpecifics.adjunctEdgesOf(vertex);
+        return adjunctSpecifics.adjunctEdgesOf(vertex);
     }
 
     /**
@@ -216,7 +216,7 @@ public abstract class AbstractAdjunctGraph<V, E>
      */
     @Override public Set<V> adjunctVertexSet()
     {
-        return adjuncSpecifics.getAdjunctVertexSet();
+        return adjunctSpecifics.getAdjunctVertexSet();
     }
 
 
@@ -224,7 +224,7 @@ public abstract class AbstractAdjunctGraph<V, E>
      * @see org.jgrapht.AdjunctGraph#getAdjunctEdge(java.lang.Object, java.lang.Object)
      */
     @Override public E getAdjunctEdge(V sourceVertex, V targetVertex) {
-        return adjuncSpecifics.getAdjunctEdge(sourceVertex, targetVertex);
+        return adjunctSpecifics.getAdjunctEdge(sourceVertex, targetVertex);
     }
 
     /* (non-Javadoc)
@@ -247,7 +247,7 @@ public abstract class AbstractAdjunctGraph<V, E>
                 }
             }
             else {
-                adjuncSpecifics.removeEdgeFromTouchingVertices(e);
+                adjunctSpecifics.removeEdgeFromTouchingVertices(e);
             }
         }
         return e;
@@ -275,7 +275,7 @@ public abstract class AbstractAdjunctGraph<V, E>
     @Override public Set<V> vertexSet()
     {
         // In adjunct graphs the vertex set is dynamic so it can't be accessed with a view and can be modified
-        return adjuncSpecifics.getVertexSet();
+        return adjunctSpecifics.getVertexSet();
     }
 
     /**
