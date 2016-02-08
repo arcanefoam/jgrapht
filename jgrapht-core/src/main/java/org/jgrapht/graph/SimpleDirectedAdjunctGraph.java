@@ -64,6 +64,4 @@ public class SimpleDirectedAdjunctGraph<V, E>
     }
 
 
-
-
 }

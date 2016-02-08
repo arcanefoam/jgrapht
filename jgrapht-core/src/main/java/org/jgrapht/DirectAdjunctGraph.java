@@ -44,7 +44,8 @@ import java.util.Set;
  * @param <V> the value type
  * @param <E> the element type
  */
-public interface DirectAdjunctGraph<V, E> extends DirectedGraph<V, E> {
+public interface DirectAdjunctGraph<V, E>
+        extends DirectedGraph<V, E>, AdjunctGraph<V, E> {
 
     /**
      * Returns the "in degree" of the specified vertex. An in degree of a vertex
