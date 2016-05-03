@@ -32,56 +32,89 @@
  * Changes
  * -------
  */
+
 package org.jgrapht.alg.util;
 
-import java.util.*;
-
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 
 /**
- * Generic pair.<br>
- * Although the instances of this class are immutable, it is impossible to
- * ensure that the references passed to the constructor will not be modified by
- * the caller.
+ * Generic pair.
+ * <br>
+ * Although the instances of this class are immutable, it is impossible
+ * to ensure that the references passed to the constructor will not be
+ * modified by the caller.
+ *
  */
-public class Pair<A, B>
-{
+public class Pair<A, B> {
+
     public A first;
     public B second;
 
-    public Pair(A a, B b)
-    {
-        this.first = a;
+    public Pair(A a, B b) {
+        this.first  = a;
         this.second = b;
     }
 
-    public boolean equals(Object other)
-    {
-        return (other instanceof Pair)
-            && Objects.equals(this.first, ((Pair) other).first)
-            && Objects.equals(this.second, ((Pair) other).second);
+    @Override
+    public boolean equals(Object other) {
+        if (other == null) {
+            return false;
+        }
+        if (other == this) {
+            return true;
+        }
+        if (!(other instanceof Pair)){
+            return false;
+        }
+        Pair<?, ?> other_ = (Pair<?, ?>) other;
+        return Objects.equals(this.first, other_.first) &&
+                Objects.equals(this.second, other_.second);
     }
 
-    public int hashCode()
-    {
-        return (this.first == null)
-            ? ((this.second == null) ? 0 : (this.second.hashCode() + 1))
-            : ((this.second == null) ? (this.first.hashCode() + 3)
-                : ((this.first.hashCode() * 19) + this.second.hashCode()));
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + Objects.hashCode(first);
+        result = prime * result + Objects.hashCode(second);
+        return result;
     }
 
     /**
-     * Creates new pair of elements pulling of the necessity to provide
-     * corresponding types of the elements supplied
+     * Creates new pair of elements pulling of the necessity to provide corresponding
+     * types of the elements supplied
      *
      * @param a first element
      * @param b second element
-     *
      * @return new pair
      */
-    public static <A, B> Pair<A, B> of(A a, B b)
-    {
-        return new Pair<>(a, b);
+    public static <A, B> Pair<A, B> of(A a, B b) {
+        return new Pair<A, B>(a, b);
+    }
+
+    /**
+     * Pair combinations.
+     *
+     * @param originalSet the original set
+     * @return the list
+     */
+    public static <T> List<Pair<T, T>> pairCombinations(Set<T> originalSet) {
+        List<T> list = new ArrayList<T>(originalSet);
+        int n = list.size();
+        List<Pair<T, T>> pairsList = new ArrayList<Pair<T, T>>();
+        T iv;
+        T jv;
+        for (int i = 0; i < n; i++) {
+            iv = list.get(i);
+            for (int j = 0; j < n; j++) {
+                if (i == j) continue;
+                jv = list.get(j);
+                pairsList.add(of(iv,jv));
+            }
+        }
+        return pairsList;
     }
 }
-
-// End Pair.java
