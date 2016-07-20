@@ -47,8 +47,8 @@ import java.util.Set;
 import org.jgrapht.DirectedGraph;
 import org.jgrapht.Graphs;
 import org.jgrapht.SimoesGraphPath;
-import org.jgrapht.SimoesGraphPathImpl;
 import org.jgrapht.alg.util.Pair;
+import org.jgrapht.graph.SimoesGraphPathImpl;
 
 /**
  * The Class SimoesAllPaths. Finds all the paths in a directed graph, following the directed edges
@@ -90,10 +90,6 @@ public class SimoesAllPaths<V, E> {
     }
 
     public void findAllPathsBetweenVertices(Set<V>  vxs) {
-//        Set<MappingAction> vxs = new HashSet<MappingAction>(this.vertexSet().stream()
-//                .filter(MappingAction.class::isInstance)
-//                .map(MappingAction.class::cast)
-//                .collect(Collectors.toSet()));
         List<Pair<V, V>> pairs = Pair.pairCombinations(vxs);
         for (Pair<V, V> pair : pairs) {
             findAllPaths(pair.first, pair.second);
@@ -138,7 +134,7 @@ public class SimoesAllPaths<V, E> {
                     } else {
                         pathStack.push(newPath);
                     }
-                } else { //if (outEdge.getTarget() instanceof MappingAction) {
+                } else {
                     addCycle(newPath, edgeTarget);
                 }
             }

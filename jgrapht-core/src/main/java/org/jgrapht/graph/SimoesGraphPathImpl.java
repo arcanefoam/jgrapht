@@ -1,4 +1,4 @@
-package org.jgrapht;
+package org.jgrapht.graph;
 /* ==========================================
  * JGraphT : a free Java graph-theory library
  * ==========================================
@@ -40,6 +40,11 @@ import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
+import org.jgrapht.DirectedGraph;
+import org.jgrapht.Graph;
+import org.jgrapht.Graphs;
+import org.jgrapht.SimoesGraphPath;
 
 /**
  * The Class SimoesGraphPathImpl.
