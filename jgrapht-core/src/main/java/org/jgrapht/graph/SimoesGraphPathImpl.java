@@ -80,7 +80,7 @@ public class SimoesGraphPathImpl<V, E> implements SimoesGraphPath<V, E> {
 
 
     /**
-     * Instantiates a new dependency path impl.
+     * Instantiates a new simoes path impl.
      *
      * @param graph the graph
      * @param e the e
@@ -90,7 +90,7 @@ public class SimoesGraphPathImpl<V, E> implements SimoesGraphPath<V, E> {
         this.edgeList = new ArrayList<E>();
         edgeList.add(e);
         startVertex = graph.getEdgeSource(e);
-        weight = 1;
+        weight = graph.getEdgeWeight(e);
         endVertex = graph.getEdgeTarget(e);
     }
 
@@ -105,8 +105,8 @@ public class SimoesGraphPathImpl<V, E> implements SimoesGraphPath<V, E> {
         this.graph = graph;
         this.edgeList = new ArrayList<E>(edgeList);
         startVertex = graph.getEdgeSource(edgeList.get(0));
-        weight = edgeList.size();
-        endVertex = graph.getEdgeTarget(edgeList.get((int) (weight-1)));
+        weight = edgeList.stream().mapToDouble(e -> graph.getEdgeWeight(e)).sum();
+        endVertex = graph.getEdgeTarget(edgeList.get(edgeList.size()-1));
     }
 
     /* (non-Javadoc)
@@ -120,7 +120,7 @@ public class SimoesGraphPathImpl<V, E> implements SimoesGraphPath<V, E> {
         }
         edgeList.add(e);
         endVertex = graph.getEdgeTarget(e);
-        weight = edgeList.size();
+        weight += graph.getEdgeWeight(e);
     }
 
     /* (non-Javadoc)
